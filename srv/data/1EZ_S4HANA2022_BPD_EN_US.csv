@@ -1,0 +1,9 @@
+﻿Test Case Name*,Activity Title*,Action Title*,Action Instructions*
+Credit Memo Processing   (1EZ),Create Credit Memo Requests,Information,This process step shows you how to generate a billing document and credit the customer's account.
+Credit Memo Processing   (1EZ),Create Credit Memo Requests,Log On,Log on to the SAP Fiori launchpad as an Internal Sales Representative 
+Credit Memo Processing   (1EZ),Create Credit Memo Requests,Access the App,Open Manage Credit Memo Requests (F1989)
+Credit Memo Processing   (1EZ),Create Credit Memo Requests,Navigate to Create Credit Memo Request,Choose Create Credit Memo Request 
+Credit Memo Processing   (1EZ),Create Credit Memo Requests,Enter Sales Document Type, Make the following entries and choose Continue. Order Type: CR (Credit Memo Request).Note : Regarding an existing order or billing document: Choose  Create with Reference  Enter the billing document number or sales order number and choose  Copy . 
+Credit Memo Processing   (1EZ),Create Credit Memo Requests,Enter Order Quantity," Make the following entries and choose   Enter  :   Sold-to Party  :  10100001   Ship-to Party  :   10100001  Customer Reference  :   ;Customer Reference Number,  Material Number   :  Material Number, Target Quantity  :  For example, 1 PC. Note If you create the credit memo request regarding an existing order or billing document, input the quantity: for example, 1 PC.    "
+Credit Memo Processing   (1EZ),Create Credit Memo Requests,Enter Order Reason," On the   Sales   tab, enter an order reason, for example,   Damaged in transit  . "
+Credit Memo Processing   (1EZ),Create Credit Memo Requests,Save Entries, Save your entries. 

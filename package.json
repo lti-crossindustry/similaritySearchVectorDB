@@ -1,0 +1,75 @@
+{
+  "name": "similaritysearchvectordb",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "files": [
+    "app",
+    "srv",
+    "db"
+  ],
+  "dependencies": {
+    "@langchain/community": "^0.3.13",
+    "@langchain/core": "^0.3.18",
+    "@sap-cloud-sdk/http-client": "^3.22.2",
+    "@sap-cloud-sdk/resilience": "^3.22.2",
+    "@sap/cds-hana": "^2",
+    "@sap/xssec": "^3",
+    "cap-llm-plugin": "^1.4.5",
+    "d3-dsv": "2",
+    "express": "^4",
+    "hdb": "^0.19.10",
+    "langchain": "^0.3.5",
+    "node-sass": "^9.0.0",
+    "passport": "^0.7.0",
+    "pdf-lib": "^1.17.1",
+    "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.14.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^1",
+    "@sap/cds-dk": "8.4.1",
+    "@sap/ux-specification": "^1.120.4",
+    "rimraf": "^3.0.2"
+  },
+  "scripts": {
+    "start": "cds-serve"
+  },
+  "cds": {
+    "requires": {
+      "cap-llm-plugin": true,
+      "auth": "mocked",
+      "db": {
+        "kind": "hana",
+        "pool": {
+          "max": 14000,
+          "min": 100
+        }
+      },
+      "GENERATIVE_AI_HUB": {
+        "EMBEDDING_MODEL_DESTINATION_NAME": "AICoreDestination",
+        "EMBEDDING_MODEL_DEPLOYMENT_URL": "/v2/inference/deployments/df49ff57aff9dc52",
+        "EMBEDDING_MODEL_RESOURCE_GROUP": "default",
+        "EMBEDDING_MODEL_API_VERSION": "2024-02-01"
+      },
+      "AICoreDestination": {
+        "kind": "rest",
+        "credentials": {
+          "destination": "GENAI_CORE_HUB",
+          "requestTimeout": "3000000"
+        }
+      },
+      "[hybrid]": {
+        "db": {
+          "kind": "hana"
+        }
+      }
+    },
+    "sql": {
+      "native_hana_associations": false
+    }
+  }
+}

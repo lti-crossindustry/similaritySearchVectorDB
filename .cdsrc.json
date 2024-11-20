@@ -1,0 +1,15 @@
+{
+  "GENERATIVE_AI_HUB": {
+    "EMBEDDING_MODEL_DESTINATION_NAME": "AICoreDestination",
+    "EMBEDDING_MODEL_DEPLOYMENT_URL": "/v2/inference/deployments/df49ff57aff9dc52",
+    "EMBEDDING_MODEL_RESOURCE_GROUP": "default",
+    "EMBEDDING_MODEL_API_VERSION": "2024-02-01"
+  },
+  "AICoreDestination": {
+    "kind": "rest",
+    "credentials": {
+      "destination": "GENAI_CORE_HUB",
+      "requestTimeout": "300000000"
+    }
+  }
+}
