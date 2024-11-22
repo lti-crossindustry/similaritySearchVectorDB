@@ -36,7 +36,10 @@
     "rimraf": "^3.0.2"
   },
   "scripts": {
-    "start": "cds-serve"
+    "start": "cds-serve",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "buildDeploy": "mbt build --mtar archive && npm run deploy"
   },
   "cds": {
     "requires": {
