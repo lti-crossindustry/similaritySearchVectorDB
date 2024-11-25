@@ -8,7 +8,7 @@ entity DocumentChunk {
     metadata_column: LargeString;
     embedding: Vector(1536);
 }
-entity SAPProcessMatrix : managed
+entity SAPProcessMatrix
 { 
    key id: String;
        level1: String;
@@ -16,8 +16,28 @@ entity SAPProcessMatrix : managed
        level3: String;
        level4: String;
        testscripts: String;
-       processflow: String;
+       processflow: String;       
+}
 
-       
+entity SAPProcessTree
+{
+   key id: String;
+       nodename: String;
+       nodelevel: String;
+       parent: String;
+       testscripts: String;
+       processflow: String; 
+}
+
+entity ProcessDocMedia
+{
+    key id        : Integer;
+        @Core.MediaType   : mediaType
+        content   : LargeBinary;
+        @Core.IsMediaType : true
+        mediaType : String;
+        fileName  : String;
+        url       : String;
+        processId: String;
 }
 
