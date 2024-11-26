@@ -19,7 +19,8 @@ module.exports = async function () {
      * for entity ProcessDocMedia.
      */
     this.before('CREATE', ProcessDocMedia, async (req) => {
-        const db = await cds.connect.to("db");
+        console.log("before File Upload");
+        // const db = await cds.connect.to("db");
         // Create Constructor for SequenceHelper 
         // Pass the sequence name and db
         const SeqReq = new SequenceHelper({
@@ -29,9 +30,9 @@ module.exports = async function () {
         //Call method getNextNumber() to fetch the next sequence number 
         let seq_no = await SeqReq.getNextNumber();
         // Assign the sequence number to id element
-        sReqId = req.data.id = seq_no;
+        sReqId = req.data.mediaId = seq_no;
         //Assign the url by appending the id
-        req.data.url = `/MediaLibSrv/ProcessDocMedia(${req.data.id})/content`;
+        req.data.url = `/MediaLibSrv/ProcessDocMedia(${req.data.mediaId})/content`;
     });
 
     this.after('CREATE', ProcessDocMedia, async (req) => {
@@ -48,7 +49,7 @@ module.exports = async function () {
      * for entity ProcessDocMedia.
      **/
     this.on("READ", ProcessDocMedia, async (req, next) => {
-        if (!req.data.id) {
+        if (!req.data.mediaId) {
             return next();
         }
         //Fetch the url from where the req is triggered
@@ -56,7 +57,7 @@ module.exports = async function () {
         //If the request url contains keyword "content"
         // then read the media content
         if (url.includes("content")) {
-            const iMediaId = req.data.id;
+            const iMediaId = req.data.mediaId;
             // var tx = cds.transaction(req);
             // // Fetch the media obj from database
             // var mediaObj = await tx.run(
@@ -66,8 +67,8 @@ module.exports = async function () {
             //     )
             // );
 
-            var mediaObj = await SELECT.one.from (ProcessDocMedia) .where ({ id: iMediaId })
-            .columns ( oProcessDocMediaRow => { oProcessDocMediaRow.content, oProcessDocMediaRow.mediaType })       
+            var mediaObj = await SELECT.one.from (ProcessDocMedia) .where ({ id: iMediaId });
+            // .columns ( oProcessDocMediaRow => { oProcessDocMediaRow.content, oProcessDocMediaRow.mediaType })       
 
 
             if (mediaObj.length <= 0) {
@@ -79,18 +80,21 @@ module.exports = async function () {
                 mediaObj.content.toString().split(";base64,").pop(),
                 "base64"
             );
-            return _formatResult(decodedMedia, mediaObj.mediaType);
+            return _formatResult(decodedMedia, mediaObj.mediaType,  mediaObj.filename,  mediaObj.url,  mediaObj.processId);
         } else return next();
     });
 
-    function _formatResult(decodedMedia, mediaType) {
+    function _formatResult(decodedMedia, mediaType, filename, url, processId) {
         const readable = new Readable();
-        const result = new Array();
+        // const result = new Array();
         readable.push(decodedMedia);
         readable.push(null);
         return {
             value: readable,
-            '*@odata.mediaContentType': mediaType
+            '*@odata.mediaContentType': mediaType,
+            filename: filename,
+            url: url,
+            processId: processId
         }
 
     

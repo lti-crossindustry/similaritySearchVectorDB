@@ -26,18 +26,23 @@ entity SAPProcessTree
        nodelevel: String;
        parent: String;
        testscripts: String;
-       processflow: String; 
+       processflow: String;
+    // Association to many ProcessDocMedia on processflow.mediaId = $self; 
 }
 
 entity ProcessDocMedia
 {
-    key id        : Integer;
-        @Core.MediaType   : mediaType
-        content   : LargeBinary;
-        @Core.IsMediaType : true
+    key mediaId : String;
+    // Association to SAPProcessTree
+        @Core.MediaType: mediaType
+        content: LargeBinary;
+        @Core.IsMediaType: true
         mediaType : String;
         fileName  : String;
-        url       : String;
-        processId: String;
+
+        // content : LargeBinary @Core.MediaType: mediaType;
+        // mediaType : String  @Core.IsMediaType;
+        // url       : String;
+        // processId: String;
 }
 

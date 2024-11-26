@@ -28,7 +28,8 @@
     "pdf-parse": "^1.1.1",
     "pdfkit": "^0.14.0",
     "uuid": "^9.0.1",
-    "stream":"^0.0.3"
+    "stream":"^0.0.3",
+    "@cap-js-community/odata-v2-adapter":"^1.13.7"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^1",

@@ -1,0 +1,81 @@
+
+
+POST http://localhost:4004/odata/v4/process-matrix-srv/ProcessDocMedia
+
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="content"; filename="/C:/Users/10616245/Downloads/TreeCreationCode.txt"
+Content-Type: text/plain
+
+(data)
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+
+
+###
+
+
+
+POST http://localhost:4004/odata/v4/process-matrix-srv/ProcessDocMedia
+
+Content-Type: application/json;odata=verbose; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="content"; filename="/C:/Users/10616245/Downloads/TreeCreationCode.txt"
+Content-Type: text/plain
+
+(data)
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="processId"
+
+N0
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="mediaType"
+
+text/plain
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+
+###
+
+POST http://localhost:4004/odata/v4/process-matrix-srv/ProcessDocMedia HTTP/1.1
+Content-Type: application/json;odata=verbose
+
+{
+  "fileName": "belgin",
+  "processId": "N0"
+}
+
+###
+POST http://localhost:4004/odata/v4/process-matrix-srv/ProcessDocMedia HTTP/1.1
+Content-Type: application/json;odata=verbose
+
+{
+"mediaId": "2",
+"mediaType" : "image/png",
+"fileName": "Advertisement.png"
+"content": <./Advertisement
+}
+
+###
+
+GET http://localhost:4004/odata/v4/process-matrix-srv/ProcessDocMedia/1 HTTP/1.1
+
+###
+
+PUT http://localhost:4004/odata/v4/process-matrix-srv/ProcessDocMedia/1 HTTP/1.1
+Content-Type: text/plain
+Slug: abc.txt
+
+<./abc.txt
+
+
+
+
+
+
