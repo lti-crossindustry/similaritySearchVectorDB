@@ -110,7 +110,8 @@ module.exports = async function () {
      * for entity ProcessDocMedia.
      */
     this.before('CREATE', ProcessDocMedia, async (req) => {
-        console.log(req);
+        // console.log(req);
+        console.log("In before CREATE");
         // Create Constructor for SequenceHelper 
         // Pass the sequence name and db
         const SeqReq = new SequenceHelper({
@@ -126,7 +127,8 @@ module.exports = async function () {
     });
 
     this.after('CREATE', ProcessDocMedia, async (req) => {
-        console.log(req);
+        // console.log(req);
+        console.log("In After CREATE");
         // Create Constructor for SequenceHelper 
         // Pass the sequence name and db
         UPDATE (SAPProcessTree, req.data.processId) .with ({

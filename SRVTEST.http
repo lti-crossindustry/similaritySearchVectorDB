@@ -59,7 +59,6 @@ Content-Type: application/json;odata=verbose
 "mediaId": "2",
 "mediaType" : "image/png",
 "fileName": "Advertisement.png"
-"content": <./Advertisement
 }
 
 ###
@@ -68,14 +67,65 @@ GET http://localhost:4004/odata/v4/process-matrix-srv/ProcessDocMedia/1 HTTP/1.1
 
 ###
 
-PUT http://localhost:4004/odata/v4/process-matrix-srv/ProcessDocMedia/1 HTTP/1.1
-Content-Type: text/plain
-Slug: abc.txt
-
-<./abc.txt
+PUT http://localhost:4004/odata/v2/process-matrix-srv/ProcessDocMedia/2/content HTTP/1.1
+Content-Type: image/png
 
 
+< ./Advertisement.png
+
+###
+POST http://localhost:4004/odata/v4/process-matrix-srv/ProcessDocMedia HTTP/1.1
+Content-Type: application/json;odata=verbose
+
+{
+"mediaId": "3",
+"mediaType" : "application/pdf",
+"fileName": "samplePDF.pdf"
+}
+
+###
+
+PUT http://localhost:4004/odata/v2/process-matrix-srv/ProcessDocMedia/3/content HTTP/1.1
+Content-Type: application/pdf
+
+< ./samplePDF.pdf
 
 
+###
+POST http://localhost:4004/odata/v2/process-matrix-srv/ProcessDocMedia HTTP/1.1
+Content-Type: application/json;text/plain;
+
+{
+"mediaId": "4",
+"mediaType" : "text/plain",
+"fileName": "abc.txt"
+}
+
+< ./abc.txt
 
 
+###
+
+POST http://localhost:4004/odata/v2/process-matrix-srv/ProcessDocMedia HTTP/1.1
+Content-Type: application/json;text/plain;
+
+{
+"mediaId": "4",
+"mediaType" : "text/plain",
+"fileName": "abc.txt"
+}
+
+< ./abc.txt
+
+###
+
+POST http://localhost:4004/odata/v2/process-matrix-srv/ProcessDocMedia HTTP/1.1
+Content-Type: multipart/form-data
+
+{
+"mediaId": "4",
+"mediaType" : "text/plain",
+"fileName": "abc.txt"
+}
+
+< ./abc.txt

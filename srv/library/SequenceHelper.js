@@ -7,6 +7,7 @@ module.exports = class SequenceHelper {
 	}
 
 	getNextNumber() {
+		console.log("In getNextNumber");
 		return new Promise((resolve, reject) => {
 			let nextNumber = 0;
 			switch (this.db.kind) {
