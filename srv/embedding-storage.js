@@ -114,3 +114,14 @@ module.exports = function() {
     }
   })
 }
+
+module.exports = cds.service.impl(async function () {
+  this.on('uploadFile', async (req) => {
+    const {fileContent } = req.data;
+
+    // Process the file content (e.g., save to database, generate embeddings, etc.)
+    // For demonstration, we'll just return a success message
+    return `File received successfully.`;
+});
+  
+});

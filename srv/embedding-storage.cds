@@ -5,3 +5,7 @@ service EmbeddingStorageService {
     function storeEmbeddings() returns String;
     function deleteEmbeddings() returns String;
 }
+
+service MyService {
+    function uploadFile(fileContent: LargeBinary) returns String;
+}
