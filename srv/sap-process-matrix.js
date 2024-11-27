@@ -159,6 +159,7 @@ class ProcessMatrixSrv extends cds.ApplicationService { async init()
     }
 
     this.on("ProcessDocDel", async (oEvent) => {
+        console.log("In Attachments Delete");
         await DELETE.from(ProcessDocMedia);
         return true;
     }
