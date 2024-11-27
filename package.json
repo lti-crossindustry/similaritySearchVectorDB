@@ -73,6 +73,12 @@
         }
       }
     },
+    "query": {
+      "limit": {
+        "default": 2000,  
+        "max": 10000      
+      }
+    },
     "sql": {
       "native_hana_associations": false
     },
