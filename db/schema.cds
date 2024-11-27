@@ -26,26 +26,20 @@ entity SAPProcessTree
        nodelevel: String;
        parent: String;
        testscripts: String;
-       processflow: String;
-    // Association to many ProcessDocMedia on processflow.mediaId = $self; 
+       processflow: Association to many ProcessDocMedia on processflow.processId = $self; 
        NavTo_TestScripts   : Composition of many SAPBusinessProcess_TestScripts
                                              on NavTo_TestScripts.ParentID = id;
 }
 
 entity ProcessDocMedia
 {
-    key mediaId : String;
-    // Association to SAPProcessTree
+        key mediaId : String;
+        processId:  Association to SAPProcessTree;
         @Core.MediaType: mediaType
         content: LargeBinary;
         @Core.IsMediaType: true
         mediaType : String;
         fileName  : String;
-
-        // content : LargeBinary @Core.MediaType: mediaType;
-        // mediaType : String  @Core.IsMediaType;
-        // url       : String;
-        // processId: String;
 }
 
 entity SAPBusinessProcess_TestScripts: managed{

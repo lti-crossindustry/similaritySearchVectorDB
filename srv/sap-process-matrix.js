@@ -5,8 +5,9 @@ const { Readable, PassThrough } = require("stream");
 cds.env.features.fetch_csrf = true;
 let sReqId;
 
-
-module.exports = async function () {
+class ProcessMatrixSrv extends cds.ApplicationService { async init() 
+    {
+        
 
     const db = await cds.connect.to('db');
     const { SAPProcessMatrix, ProcessDocMedia, SAPProcessTree } = db.entities('com.ltim.similaritysearch');
@@ -103,110 +104,99 @@ module.exports = async function () {
          await INSERT.into(SAPProcessTree).entries(aTblEnteries);
          return "Master Data Table - SAPProcessTree updated";
     }
-    
 
-    /**
-     * Handler method called before creating data entry
-     * for entity ProcessDocMedia.
-     */
-    // this.before('CREATE', ProcessDocMedia, async (req) => {
-    //     // console.log(req);
-    //     console.log("In before CREATE");
-    //     // Create Constructor for SequenceHelper 
-    //     // Pass the sequence name and db
-    //     const SeqReq = new SequenceHelper({
-    //         sequence: "MEDIA_ID",
-    //         db: db,
-    //     });
-    //     //Call method getNextNumber() to fetch the next sequence number 
-    //     let seq_no = await SeqReq.getNextNumber();
-    //     // Assign the sequence number to id element
-    //     sReqId = req.data.mediaId = seq_no;
-    //     //Assign the url by appending the id
-    //     // req.data.url = `/MediaLibSrv/ProcessDocMedia(${req.data.mediaId})/content`;
-    // });
+    this.before("READ", SAPProcessTree, async (req) => {
+        cds.log("before Media Read");
+    });
 
-    // this.after('CREATE', ProcessDocMedia, async (req) => {
-    //     // console.log(req);
-    //     console.log("In After CREATE");
-    //     // Create Constructor for SequenceHelper 
-    //     // Pass the sequence name and db
-    //     UPDATE (SAPProcessTree, req.data.processId) .with ({
-    //         processflow: sReqId     
-    //       });
-    // });
-
+    this.before("READ", ProcessDocMedia, async (req) => {
+        console.log("before Media Read");
+    });
     /**
      * Handler method called on reading data entry
      * for entity ProcessDocMedia.
      **/
-    // this.on("READ", ProcessDocMedia, async (req, next) => {
-    //     console.log("in Media Read");
-    //     if (!req.data.mediaId) {
-    //         return next();
-    //     }
-    //     //Fetch the url from where the req is triggered
-    //     const url = req._.req.path;
-    //     //If the request url contains keyword "content"
-    //     // then read the media content
-    //     if (url.includes("content")) {
-    //         const iMediaId = req.data.mediaId;
+    this.on("READ", ProcessDocMedia, async (req, next) => {
+        console.log("in Media Read");
+        if (!req.data.mediaId) {
+            return next();
+        }
+        //Fetch the url from where the req is triggered
+        const url = req._.req.path;
+        //If the request url contains keyword "content"
+        // then read the media content
+        if (url.includes("content")) {
+            const iMediaId = req.data.mediaId;
             
+            var mediaObj = await SELECT.one.from (ProcessDocMedia) .where ({ id: iMediaId });    
 
-    //         var mediaObj = await SELECT.one.from (ProcessDocMedia) .where ({ id: iMediaId });
-    //         // .columns ( oProcessDocMediaRow => { oProcessDocMediaRow.content, oProcessDocMediaRow.mediaType })       
+            if (mediaObj.length <= 0) {
+                req.reject(404, "Media not found for the ID");
+                return;
+            }
+            var decodedMedia = "";
+            decodedMedia = new Buffer.from(
+                mediaObj.content.toString().split(";base64,").pop(),
+                "base64"
+            );
+            return _formatResult(decodedMedia, mediaObj.mediaType,  mediaObj.filename, mediaObj.processId);
+        } else return next();
+    });
 
-
-    //         if (mediaObj.length <= 0) {
-    //             req.reject(404, "Media not found for the ID");
-    //             return;
-    //         }
-    //         var decodedMedia = "";
-    //         decodedMedia = new Buffer.from(
-    //             mediaObj.content.toString().split(";base64,").pop(),
-    //             "base64"
-    //         );
-    //         return _formatResult(decodedMedia, mediaObj.mediaType,  mediaObj.filename, mediaObj.processId);
-    //     } else return next();
-    // });
-
-    // function _formatResult(decodedMedia, mediaType, filename, processId) {
-    //     const readable = new Readable();
-    //     // const result = new Array();
-    //     readable.push(decodedMedia);
-    //     readable.push(null);
-    //     return {
-    //         value: readable,
-    //         '*@odata.mediaContentType': mediaType,
-    //         filename: filename,            
-    //         processId: processId
-    //     }
+    function _formatResult(decodedMedia, mediaType, filename, processId) {
+        const readable = new Readable();
+        // const result = new Array();
+        readable.push(decodedMedia);
+        readable.push(null);
+        return {
+            value: readable,
+            '*@odata.mediaContentType': mediaType,
+            filename: filename,            
+            processId: processId
+        }
 
     
-    // }
+    }
 
+    this.on("ProcessDocDel", async (oEvent) => {
+        await DELETE.from(ProcessDocMedia);
+        return true;
+    }
+    );
+
+    //     /**
+//      * Handler method called before creating data entry
+//      * for entity ProcessDocMedia.
+//      */
+//     // this.before('CREATE', ProcessDocMedia, async (req) => {
+//     //     // console.log(req);
+//     //     console.log("In before CREATE");
+//     //     // Create Constructor for SequenceHelper 
+//     //     // Pass the sequence name and db
+//     //     const SeqReq = new SequenceHelper({
+//     //         sequence: "MEDIA_ID",
+//     //         db: db,
+//     //     });
+//     //     //Call method getNextNumber() to fetch the next sequence number 
+//     //     let seq_no = await SeqReq.getNextNumber();
+//     //     // Assign the sequence number to id element
+//     //     sReqId = req.data.mediaId = seq_no;
+//     //     //Assign the url by appending the id
+//     //     // req.data.url = `/MediaLibSrv/ProcessDocMedia(${req.data.mediaId})/content`;
+//     // });
+
+//     // this.after('CREATE', ProcessDocMedia, async (req) => {
+//     //     // console.log(req);
+//     //     console.log("In After CREATE");
+//     //     // Create Constructor for SequenceHelper 
+//     //     // Pass the sequence name and db
+//     //     UPDATE (SAPProcessTree, req.data.processId) .with ({
+//     //         processflow: sReqId     
+//     //       });
+//     // });
+
+    return super.init()
+    }
 }
 
-
-// this.on('READ', async (oEvent) => {
-    //     const db = await cds.connect.to('db');
-
-    //     // reflect entity definitions used below...
-    //     const { SAPProcessMatrix, SAPProcessTree, ProcessDocMedia } = db.entities('com.ltim.similaritysearch');
-    //     console.log(oEvent.req.query.$expand);
-    //     console.log(oEvent.req.url);
-    //     if( oEvent.req.url === "/ProcessMatrix" )
-    //     {
-    //         return ProcessMatrixData( SAPProcessMatrix, SAPProcessTree );
-    //     }
-    //     else if(  oEvent.req.url === "/ProcessTree" )
-    //     {
-    //         return await SELECT.from(SAPProcessTree);
-    //     }
-    //     else if( oEvent.req.url === "/ProcessDocMedia" )
-    //     {
-    //         return await SELECT.from(ProcessDocMedia);
-    //     }
-
-    // }
-    // );
+module.exports = ProcessMatrixSrv;

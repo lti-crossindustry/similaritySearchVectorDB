@@ -8,5 +8,6 @@ service ProcessMatrixSrv {
     entity ProcessTree as projection on db.SAPProcessTree;
 
     function ProcessMatrixTree() returns Map;
+    function ProcessDocDel() returns Boolean;
 
 }
