@@ -42,7 +42,7 @@ entity ProcessDocMedia
         fileName  : String;
 }
 
-entity SAPBusinessProcess_TestScripts: managed{
+entity SAPBusinessProcess_TestScripts {
         key sNo            : UUID;
         ParentID           : String(36); 
         testCaseID         : String;
@@ -57,19 +57,19 @@ entity SAPBusinessProcess_TestScripts: managed{
         
 }
 
-entity SAPTestScripts_Preconditions: managed{
+entity SAPTestScripts_Preconditions {
         key sNo            : UUID;
         preconditions      : String; 
         ParentID           : String(36); 
 }
 
-entity SAPTestScripts_TestSteps: managed{
+entity SAPTestScripts_TestSteps {
         key sNo            : UUID;
         testSteps      : String; 
         ParentID           : String(36); 
 }
 
-entity SAPTestScripts_ExpResults: managed{
+entity SAPTestScripts_ExpResults {
         key sNo            : UUID;
         expectedResults      : String; 
         ParentID           : String(36); 
