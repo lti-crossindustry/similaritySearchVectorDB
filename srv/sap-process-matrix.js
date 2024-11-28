@@ -154,7 +154,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
         function _formatResult(decodedMedia, mediaType, filename) {
             const readable = new Readable();
             readable.push(decodedMedia);
-            // readable.push(null);
+            readable.push(null);
 
             return {
                 value: readable,
@@ -166,37 +166,37 @@ class ProcessMatrixSrv extends cds.ApplicationService {
 
         }
 
-        this.on("UPDATE", ProcessDocMedia, async (req, next) => {
-            console.log("in Media Read");
-            if (!req.data.mediaId) {
-                return next();
-            }
-            //Fetch the url from where the req is triggered
-            const url = req._.req.path;
-            //If the request url contains keyword "content"
-            // then read the media content
-            if (url.includes("content")) {
-                const iMediaId = req.data.mediaId;
+        // this.on("UPDATE", ProcessDocMedia, async (req, next) => {
+        //     console.log("in Media Read");
+        //     if (!req.data.mediaId) {
+        //         return next();
+        //     }
+        //     //Fetch the url from where the req is triggered
+        //     const url = req._.req.path;
+        //     //If the request url contains keyword "content"
+        //     // then read the media content
+        //     if (url.includes("content")) {
+        //         const iMediaId = req.data.mediaId;
 
-                var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId });
+        //         var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId });
 
-                if (mediaObj.length <= 0) {
-                    req.reject(404, "Media not found for the ID");
-                    return;
-                }
+        //         if (mediaObj.length <= 0) {
+        //             req.reject(404, "Media not found for the ID");
+        //             return;
+        //         }
 
-                const stream = new PassThrough();
-                const chunks = [];
-                stream.on('data', (chunk) => { chunks.push(chunk) });
-                stream.on('end', async () => {
-                    mediaObj.content = Buffer.concat(chunks).toString('base64 ');
-                    await UPDATE(Books, iMediaId).with(mediaObj);
-                });
-                req.data.content.pipe(stream);
+        //         const stream = new PassThrough();
+        //         const chunks = [];
+        //         stream.on('data', (chunk) => { chunks.push(chunk) });
+        //         stream.on('end', async () => {
+        //             mediaObj.content = Buffer.concat(chunks).toString('base64');
+        //             await UPDATE(Books, iMediaId).with(mediaObj);
+        //         });
+        //         req.data.content.pipe(stream);
 
-            } else return next();
+        //     } else return next();
 
-        });
+        // });
 
         this.on("ProcessDocDel", async (oEvent) => {
             console.log("In Attachments Delete");
