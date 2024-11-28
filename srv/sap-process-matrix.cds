@@ -12,7 +12,7 @@ service ProcessMatrixSrv {
      entity SAPTestScripts_ExpResults as projection on db.SAPTestScripts_ExpResults;
 
 
-    function ProcessMatrixTree() returns Map;
+    function ProcessMatrixTree() returns String;
     function ProcessDocDel() returns Boolean;
 
 }

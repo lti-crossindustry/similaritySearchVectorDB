@@ -112,7 +112,61 @@ class ProcessMatrixSrv extends cds.ApplicationService {
          * Handler method called on reading data entry
          * for entity ProcessDocMedia.
          **/
-        this.on("READ", ProcessDocMedia, async (req, next) => {
+        // this.on("READ", ProcessDocMedia, async (req, next) => {
+        //     console.log("in Media Read");
+        //     if (!req.data.mediaId) {
+        //         return next();
+        //     }
+        //     //Fetch the url from where the req is triggered
+        //     const url = req._.req.path;
+        //     //If the request url contains keyword "content"
+        //     // then read the media content
+        //     if (url.includes("content")) {
+        //         const iMediaId = req.data.mediaId;
+
+        //         var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId });
+
+        //         if (mediaObj.length <= 0) {
+        //             req.reject(404, "Media not found for the ID");
+        //             return;
+        //         }
+        //         var decodedMedia = "";
+        //         let mediaStr = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content'); 
+        //         mediaStr = mediaStr.content.toString();
+        //         decodedMedia = new Buffer.from(
+        //             mediaStr.split(";base64,").pop(),
+        //             "base64"
+        //         );
+        //         return _formatResult(decodedMedia, mediaObj.mediaType, mediaObj.filename);
+
+        //         // let mediaStr = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content'); 
+        //         // return mediaStr.toString('base64');
+        //         // return {
+        //         //     content: mediaStr.toString('base64'),
+        //         //     '*@odata.mediaContentType': mediaObj.mediaType
+        //         //     // filename: filename
+        //         // }
+
+        //     } else return next();
+
+        // });
+
+        function _formatResult(decodedMedia, mediaType, filename) {
+            const readable = new Readable();
+            readable.push(decodedMedia);
+            // readable.push(null);
+
+            return {
+                value: readable,
+                // '*@odata.mediaContentType': mediaType
+                $mediaContentType: mediaType,
+                // filename: filename
+            }
+
+
+        }
+
+        this.on("UPDATE", ProcessDocMedia, async (req, next) => {
             console.log("in Media Read");
             if (!req.data.mediaId) {
                 return next();
@@ -130,31 +184,19 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                     req.reject(404, "Media not found for the ID");
                     return;
                 }
-                var decodedMedia = "";
-                let mediaStr = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content'); 
-                mediaStr = mediaStr.content.toString();
-                decodedMedia = new Buffer.from(
-                    mediaStr.split(";base64,").pop(),
-                    "base64"
-                );
-                return _formatResult(decodedMedia, mediaObj.mediaType, mediaObj.filename);
+
+                const stream = new PassThrough();
+                const chunks = [];
+                stream.on('data', (chunk) => { chunks.push(chunk) });
+                stream.on('end', async () => {
+                    mediaObj.content = Buffer.concat(chunks).toString('base64 ');
+                    await UPDATE(Books, iMediaId).with(mediaObj);
+                });
+                req.data.content.pipe(stream);
 
             } else return next();
+
         });
-
-        function _formatResult(decodedMedia, mediaType, filename) {
-            const readable = new Readable();
-            readable.push(decodedMedia);
-            readable.push(null);
-            
-            return {
-                value: readable,
-                '*@odata.mediaContentType': mediaType
-                // filename: filename
-            }
-
-
-        }
 
         this.on("ProcessDocDel", async (oEvent) => {
             console.log("In Attachments Delete");
