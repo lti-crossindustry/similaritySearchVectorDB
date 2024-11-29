@@ -89,7 +89,10 @@
       "preview": true
     },
     "server": {
-      "index": true
+      "index": true,
+      "body_parser": {
+        "limit": "5mb"
+      }
     }
   }
 }

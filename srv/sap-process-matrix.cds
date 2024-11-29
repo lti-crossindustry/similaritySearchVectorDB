@@ -14,5 +14,6 @@ service ProcessMatrixSrv {
 
     function ProcessMatrixTree() returns String;
     function ProcessDocDel() returns Boolean;
+    function ProcessDocMediaBase64() returns String;
 
 }

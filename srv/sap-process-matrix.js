@@ -100,56 +100,53 @@ class ProcessMatrixSrv extends cds.ApplicationService {
             return "Master Data Table - SAPProcessTree updated";
         }
 
-        this.before("READ", SAPProcessTree, async (req) => {
-            // cds.log("before Media Read");
-            LOG.info("before SAPProcessTree Read");
-            // log.info("before Media Read");
-
-        });
-
-
         /**
          * Handler method called on reading data entry
          * for entity ProcessDocMedia.
          **/
-        // this.on("READ", ProcessDocMedia, async (req, next) => {
-        //     console.log("in Media Read");
-        //     if (!req.data.mediaId) {
-        //         return next();
-        //     }
-        //     //Fetch the url from where the req is triggered
-        //     const url = req._.req.path;
-        //     //If the request url contains keyword "content"
-        //     // then read the media content
-        //     if (url.includes("content")) {
-        //         const iMediaId = req.data.mediaId;
+        this.on("READ", ProcessDocMedia, async (req, next) => {
+            console.log("in Media Read");
+            if (!req.data.mediaId) {
+                return next();
+            }
+            //Fetch the url from where the req is triggered
+            const url = req._.req.path;
+            //If the request url contains keyword "content"
+            // then read the media content
+            if (url.includes("content")) {
+                const iMediaId = req.data.mediaId;
 
-        //         var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId });
+                var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content', 'mediaType');
 
-        //         if (mediaObj.length <= 0) {
-        //             req.reject(404, "Media not found for the ID");
-        //             return;
-        //         }
-        //         var decodedMedia = "";
-        //         let mediaStr = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content'); 
-        //         mediaStr = mediaStr.content.toString();
-        //         decodedMedia = new Buffer.from(
-        //             mediaStr.split(";base64,").pop(),
-        //             "base64"
-        //         );
-        //         return _formatResult(decodedMedia, mediaObj.mediaType, mediaObj.filename);
+                if (mediaObj.length <= 0) {
+                    req.reject(404, "Media not found for the ID");
+                    return;
+                }
+                var decodedMedia = "";
+                // let mediaStr = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content', 'mediaType');
+                // mediaStr = mediaStr.content.toString();
+                // mediaStr = mediaStr.toString();
+                // decodedMedia = new Buffer.from(
+                //     mediaStr.split(";base64,").pop(),
+                //     "base64"
+                // );
+                // return _formatResult(decodedMedia, mediaObj.mediaType, mediaObj.filename);
+                return {
+                    value: mediaObj.content,                
+                    $mediaContentType: mediaObj.mediaType                
+                }
 
-        //         // let mediaStr = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content'); 
-        //         // return mediaStr.toString('base64');
-        //         // return {
-        //         //     content: mediaStr.toString('base64'),
-        //         //     '*@odata.mediaContentType': mediaObj.mediaType
-        //         //     // filename: filename
-        //         // }
+                // let mediaStr = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content'); 
+                // return mediaStr.toString('base64');
+                // return {
+                //     content: mediaStr.toString('base64'),
+                //     '*@odata.mediaContentType': mediaObj.mediaType
+                //     // filename: filename
+                // }
 
-        //     } else return next();
+            } else return next();
 
-        // });
+        });
 
         function _formatResult(decodedMedia, mediaType, filename) {
             const readable = new Readable();
@@ -157,15 +154,14 @@ class ProcessMatrixSrv extends cds.ApplicationService {
             readable.push(null);
 
             return {
-                value: readable,
-                // '*@odata.mediaContentType': mediaType
-                $mediaContentType: mediaType,
-                // filename: filename
+                value: readable,                
+                $mediaContentType: mediaType                
             }
 
 
         }
 
+        // Method to use V4 version for content upload, it changes readable stream to base64
         // this.on("UPDATE", ProcessDocMedia, async (req, next) => {
         //     console.log("in Media Read");
         //     if (!req.data.mediaId) {
@@ -190,7 +186,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
         //         stream.on('data', (chunk) => { chunks.push(chunk) });
         //         stream.on('end', async () => {
         //             mediaObj.content = Buffer.concat(chunks).toString('base64');
-        //             await UPDATE(Books, iMediaId).with(mediaObj);
+        //             await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
         //         });
         //         req.data.content.pipe(stream);
 
@@ -205,36 +201,26 @@ class ProcessMatrixSrv extends cds.ApplicationService {
         }
         );
 
-        //     /**
-        //      * Handler method called before creating data entry
-        //      * for entity ProcessDocMedia.
-        //      */
-        //     // this.before('CREATE', ProcessDocMedia, async (req) => {
-        //     //     // console.log(req);
-        //     //     console.log("In before CREATE");
-        //     //     // Create Constructor for SequenceHelper 
-        //     //     // Pass the sequence name and db
-        //     //     const SeqReq = new SequenceHelper({
-        //     //         sequence: "MEDIA_ID",
-        //     //         db: db,
-        //     //     });
-        //     //     //Call method getNextNumber() to fetch the next sequence number 
-        //     //     let seq_no = await SeqReq.getNextNumber();
-        //     //     // Assign the sequence number to id element
-        //     //     sReqId = req.data.mediaId = seq_no;
-        //     //     //Assign the url by appending the id
-        //     //     // req.data.url = `/MediaLibSrv/ProcessDocMedia(${req.data.mediaId})/content`;
-        //     // });
-
-        //     // this.after('CREATE', ProcessDocMedia, async (req) => {
-        //     //     // console.log(req);
-        //     //     console.log("In After CREATE");
-        //     //     // Create Constructor for SequenceHelper 
-        //     //     // Pass the sequence name and db
-        //     //     UPDATE (SAPProcessTree, req.data.processId) .with ({
-        //     //         processflow: sReqId     
-        //     //       });
-        //     // });
+        this.on("ProcessDocMediaBase64", async (oEvent) => {
+            console.log("In ProcessDocMedia base 64");
+            // let mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content', 'mediaType');
+            
+            // if (mediaObj.length <= 0) {
+            //     req.reject(404, "Media not found for the ID");
+            //     return;
+            // }
+            // // const stream = new PassThrough();
+            // let stream = mediaObj.content;
+            // let sBase64;
+            // const chunks = [];
+            // stream.on('data', (chunk) => { chunks.push(chunk) });
+            // stream.on('end', async () => {
+            //     sBase64 = Buffer.concat(chunks).toString('base64');
+                
+            // });
+            // return sBase64;
+        }
+        );
 
         return super.init();
     }
