@@ -5,6 +5,8 @@ const { CSVLoader  } = require('@langchain/community/document_loaders/fs/csv')
 const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter')
 const path = require('path')
 const fs = require('fs')
+const { Document, Packer, Paragraph, TextRun } = require('docx');
+const { uuid } = require('@sap/cds/lib/utils/cds-utils')
   
 // Helper method to convert embeddings to buffer for insertion
 let array2VectorBuffer = (data) => {
@@ -40,32 +42,35 @@ let deleteIfExists = (filePath) => {
     }
 }
 
-module.exports = function() {
+module.exports = cds.service.impl(async function () {
   this.on('storeEmbeddings', async (req) => {
-    try {
-      const vectorPlugin = await cds.connect.to('cap-llm-plugin')
-      const { DocumentChunk } = this.entities
-    
-      console.log(__dirname)
-      console.log(path.resolve('Standard_Tcode_Library_for_S4_2023_02.csv'))
-     // const loader = new TextLoader(path.resolve('Standard_Tcode_Library_for_S4_2023_01.xlsx'))
-    //  const document = await loader.load()
+    const {textFile } = req.data;
+    try{
+      
+      const chunkSize = 5000; // Define your chunk size
+      const textChunks = [];
 
-    const loader = new CSVLoader(file_path="./db/data/Standard_Tcode_Library_for_S4_2023_02.csv")
-    const document = await loader.load()
+      for (let i = 0; i < textFile.length; i += chunkSize) {
+          const chunk = textFile.slice(i, i + chunkSize);
+          textChunks.push({ pageContent: chunk.toString('utf-8'), startIndex: i });
+      }
 
-
+      //const text = buffer.toString('utf-8');
+      // Split the text into chunks
       const splitter = new RecursiveCharacterTextSplitter({
         chunkSize: 5000,
         chunkOverlap: 0,
         addStartIndex: true
-      })
-        
-      const textChunks = await splitter.splitDocuments(document)
+      });
+  
+      const vectorPlugin = await cds.connect.to('cap-llm-plugin')
+      const { DocumentChunk } = this.entities
+  
+      //const document = [{ text }]; // Assuming the splitter expects an object with a text property
+      //const textChunks = await splitter.splitDocuments(document);
       console.log(`Documents split into ${textChunks.length} chunks.`)
-
       console.log("Generating the vector embeddings for the text chunks.")
-      console.log(loader.filePath)
+  
       // For each text chunk generate the embeddings
       let textChunkEntries = []
       var j = 47;
@@ -76,7 +81,7 @@ module.exports = function() {
         
          k = k + 1;
         const entry = {
-          "id": k.toString(),
+          "id": "1234819",
           "text_chunk": textChunks[i].pageContent,
           "metadata_column": path.resolve('db/data/Standard_Tcode_Library_for_S4_2023_02.csv'),
           "embedding": array2VectorBuffer(embedding)
@@ -85,7 +90,7 @@ module.exports = function() {
         textChunkEntries.push(entry)
         console.log(i);
       }
-
+  
       console.log("Inserting text chunks with embeddings into db.")
       // Insert the text chunk with embeddings into db
       const insertStatus = await INSERT.into(DocumentChunk).entries(textChunkEntries)
@@ -93,9 +98,11 @@ module.exports = function() {
         throw new Error("Insertion of text chunks into db failed!")
       }
       return `Embeddings stored successfully to db.`
-    } catch (error){
+    }
+   catch (error){
       // Handle any errors that occur during the execution
       console.log('Error while generating and storing vector embeddings:', error)
+      return `Error while generating and storing vector embeddings`
       throw error
     }
 })
@@ -113,9 +120,7 @@ module.exports = function() {
       throw error
     }
   })
-}
 
-module.exports = cds.service.impl(async function () {
   this.on('uploadFile', async (req) => {
     const {fileContent } = req.data;
     try{
@@ -179,5 +184,4 @@ module.exports = cds.service.impl(async function () {
       throw error
     }
 });
-
 });
