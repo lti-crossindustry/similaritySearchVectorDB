@@ -116,7 +116,8 @@ class ProcessMatrixSrv extends cds.ApplicationService {
             if (url.includes("content")) {
                 const iMediaId = req.data.mediaId;
 
-                var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content', 'mediaType');
+                // var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content', 'mediaType');
+                var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId });
 
                 if (mediaObj.length <= 0) {
                     req.reject(404, "Media not found for the ID");
@@ -124,25 +125,13 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                 }
                 var decodedMedia = "";
                 // let mediaStr = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content', 'mediaType');
-                // mediaStr = mediaStr.content.toString();
+                let mediaStr = mediaObj.base64content.toString();
                 // mediaStr = mediaStr.toString();
-                // decodedMedia = new Buffer.from(
-                //     mediaStr.split(";base64,").pop(),
-                //     "base64"
-                // );
-                // return _formatResult(decodedMedia, mediaObj.mediaType, mediaObj.filename);
-                return {
-                    value: mediaObj.content,                
-                    $mediaContentType: mediaObj.mediaType                
-                }
-
-                // let mediaStr = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content'); 
-                // return mediaStr.toString('base64');
-                // return {
-                //     content: mediaStr.toString('base64'),
-                //     '*@odata.mediaContentType': mediaObj.mediaType
-                //     // filename: filename
-                // }
+                decodedMedia = new Buffer.from(
+                    mediaStr.split(";base64,").pop(),
+                    "base64"
+                );
+                return _formatResult(decodedMedia, mediaObj.mediaType, mediaObj.filename);
 
             } else return next();
 
@@ -162,37 +151,37 @@ class ProcessMatrixSrv extends cds.ApplicationService {
         }
 
         // Method to use V4 version for content upload, it changes readable stream to base64
-        // this.on("UPDATE", ProcessDocMedia, async (req, next) => {
-        //     console.log("in Media Read");
-        //     if (!req.data.mediaId) {
-        //         return next();
-        //     }
-        //     //Fetch the url from where the req is triggered
-        //     const url = req._.req.path;
-        //     //If the request url contains keyword "content"
-        //     // then read the media content
-        //     if (url.includes("content")) {
-        //         const iMediaId = req.data.mediaId;
+        this.on("UPDATE", ProcessDocMedia, async (req, next) => {
+            console.log("in Media Update");
+            if (!req.data.mediaId) {
+                return next();
+            }
+            //Fetch the url from where the req is triggered
+            const url = req._.req.path;
+            //If the request url contains keyword "content"
+            // then read the media content
+            if (url.includes("content")) {
+                const iMediaId = req.data.mediaId;
 
-        //         var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId });
+                var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId });
 
-        //         if (mediaObj.length <= 0) {
-        //             req.reject(404, "Media not found for the ID");
-        //             return;
-        //         }
+                if (mediaObj.length <= 0) {
+                    req.reject(404, "Media not found for the ID");
+                    return;
+                }
 
-        //         const stream = new PassThrough();
-        //         const chunks = [];
-        //         stream.on('data', (chunk) => { chunks.push(chunk) });
-        //         stream.on('end', async () => {
-        //             mediaObj.content = Buffer.concat(chunks).toString('base64');
-        //             await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
-        //         });
-        //         req.data.content.pipe(stream);
+                const stream = new PassThrough();
+                const chunks = [];
+                stream.on('data', (chunk) => { chunks.push(chunk) });
+                stream.on('end', async () => {
+                    mediaObj.base64content = Buffer.concat(chunks).toString('base64');
+                    await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
+                });
+                req.data.content.pipe(stream); // writes data in stream object (writeable)
 
-        //     } else return next();
+            } else return next();
 
-        // });
+        });
 
         this.on("ProcessDocDel", async (oEvent) => {
             console.log("In Attachments Delete");
@@ -201,26 +190,27 @@ class ProcessMatrixSrv extends cds.ApplicationService {
         }
         );
 
-        this.on("ProcessDocMediaBase64", async (oEvent) => {
-            console.log("In ProcessDocMedia base 64");
-            // let mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content', 'mediaType');
-            
-            // if (mediaObj.length <= 0) {
-            //     req.reject(404, "Media not found for the ID");
-            //     return;
-            // }
-            // // const stream = new PassThrough();
-            // let stream = mediaObj.content;
-            // let sBase64;
-            // const chunks = [];
-            // stream.on('data', (chunk) => { chunks.push(chunk) });
-            // stream.on('end', async () => {
-            //     sBase64 = Buffer.concat(chunks).toString('base64');
+        // this.on("ProcessDocMediaBase64", async (req) => {
+        //     console.log("In ProcessDocMedia base 64");
+        //     let mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: req.data.mediaId }).columns('content');
+        //     // .columns('content', 'mediaType');
+        //     if (mediaObj.length <= 0) {
+        //         req.reject(404, "Media not found for the ID");
+        //         return;
+        //     }
+        //     // const stream = new PassThrough();
+        //     // let stream = mediaObj.base64content;
+        //     // let sBase64;
+        //     // const chunks = [];
+        //     // stream.on('data', (chunk) => { chunks.push(chunk) });
+        //     // stream.on('end', async () => {
+        //     //     sBase64 = Buffer.concat(chunks).toString('base64');
                 
-            // });
-            // return sBase64;
-        }
-        );
+        //     // });
+        //     // return sBase64;
+        //     return mediaObj.base64content;
+        // }
+        // );
 
         return super.init();
     }

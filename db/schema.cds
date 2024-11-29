@@ -40,6 +40,7 @@ entity ProcessDocMedia
         @Core.IsMediaType: true
         mediaType : String;
         fileName  : String;
+        base64content: LargeString;
 }
 
 entity SAPBusinessProcess_TestScripts {
