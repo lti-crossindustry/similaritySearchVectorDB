@@ -7,5 +7,5 @@ service EmbeddingStorageService {
 }
 
 service MyService {
-    function uploadFile(fileContent: LargeString) returns String;
+    action uploadFile(fileContent: LargeString) returns String;
 }
