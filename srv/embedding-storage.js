@@ -70,7 +70,18 @@ module.exports = cds.service.impl(async function () {
       //const textChunks = await splitter.splitDocuments(document);
       console.log(`Documents split into ${textChunks.length} chunks.`)
       console.log("Generating the vector embeddings for the text chunks.")
-  
+      
+      function generateRandomNumber() {
+        // Generate a random number between 10000 and 999999
+        const min = 10000;
+        const max = 999999;
+        const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+        return randomNumber;
+      }
+    
+    // Example usage
+    const randomNumber = generateRandomNumber();
+
       // For each text chunk generate the embeddings
       let textChunkEntries = []
       var j = 47;
@@ -80,8 +91,9 @@ module.exports = cds.service.impl(async function () {
         const embedding = await vectorPlugin.getEmbedding(textChunks[i].pageContent)
         
          k = k + 1;
-        const entry = {
-          "id": "1234899",
+        console.log('UUID',randomNumber);
+         const entry = {
+          "id": randomNumber.toString(),
           "text_chunk": textChunks[i].pageContent,
           "metadata_column": path.resolve('db/data/Standard_Tcode_Library_for_S4_2023_02.csv'),
           "embedding": array2VectorBuffer(embedding)
