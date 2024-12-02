@@ -4,6 +4,6 @@ service EmbeddingStorageService {
     entity DocumentChunk as projection on db.DocumentChunk excluding { embedding };
     function storeEmbeddings(textFile: LargeString, parentId:String, fileName:String) returns String;
     function deleteEmbeddings() returns String;
-    action uploadFile(fileContent: LargeString) returns String;
+    action uploadFile(textFile: LargeString, parentId:String, fileName:String) returns String;
 }
 

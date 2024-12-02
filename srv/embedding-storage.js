@@ -138,14 +138,16 @@ module.exports = cds.service.impl(async function () {
   })
 
   this.on('uploadFile', async (req) => {
-    const {fileContent } = req.data;
+    const {textFile} = req.data;
+    const {parentId} = req.data;
+    const {fileName} = req.data;
     try{
       
       const chunkSize = 5000; // Define your chunk size
       const textChunks = [];
-
-      for (let i = 0; i < fileContent.length; i += chunkSize) {
-          const chunk = fileContent.slice(i, i + chunkSize);
+      console.log('parentId',parentId);
+      for (let i = 0; i < textFile.length; i += chunkSize) {
+          const chunk = textFile.slice(i, i + chunkSize);
           textChunks.push({ pageContent: chunk.toString('utf-8'), startIndex: i });
       }
 
@@ -164,7 +166,18 @@ module.exports = cds.service.impl(async function () {
       //const textChunks = await splitter.splitDocuments(document);
       console.log(`Documents split into ${textChunks.length} chunks.`)
       console.log("Generating the vector embeddings for the text chunks.")
-  
+      
+      function generateRandomNumber() {
+        // Generate a random number between 10000 and 999999
+        const min = 10000;
+        const max = 999999;
+        const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+        return randomNumber;
+      }
+    
+    // Example usage
+    const randomNumber = generateRandomNumber();
+
       // For each text chunk generate the embeddings
       let textChunkEntries = []
       var j = 47;
@@ -174,10 +187,13 @@ module.exports = cds.service.impl(async function () {
         const embedding = await vectorPlugin.getEmbedding(textChunks[i].pageContent)
         
          k = k + 1;
-        const entry = {
-          "id": k.toString(),
+        console.log('UUID',randomNumber);
+         const entry = {
+          "id": randomNumber.toString(),
+          "parentId":parentId,
           "text_chunk": textChunks[i].pageContent,
-          "metadata_column": path.resolve('db/data/Standard_Tcode_Library_for_S4_2023_02.csv'),
+          //"metadata_column": path.resolve('db/data/Standard_Tcode_Library_for_S4_2023_02.csv'),
+            "metadata_column":fileName,
           "embedding": array2VectorBuffer(embedding)
         }
         
