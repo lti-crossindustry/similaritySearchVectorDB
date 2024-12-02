@@ -46,6 +46,7 @@ module.exports = cds.service.impl(async function () {
   this.on('storeEmbeddings', async (req) => {
     const {textFile} = req.data;
     const {parentId} = req.data;
+    const {fileName} = req.data;
     try{
       
       const chunkSize = 5000; // Define your chunk size
@@ -97,7 +98,8 @@ module.exports = cds.service.impl(async function () {
           "id": randomNumber.toString(),
           "parentId":parentId,
           "text_chunk": textChunks[i].pageContent,
-          "metadata_column": path.resolve('db/data/Standard_Tcode_Library_for_S4_2023_02.csv'),
+          //"metadata_column": path.resolve('db/data/Standard_Tcode_Library_for_S4_2023_02.csv'),
+            "metadata_column":fileName,
           "embedding": array2VectorBuffer(embedding)
         }
         
