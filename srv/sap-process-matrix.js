@@ -174,7 +174,17 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                 const chunks = [];
                 stream.on('data', (chunk) => { chunks.push(chunk) });
                 stream.on('end', async () => {
-                    mediaObj.base64content = Buffer.concat(chunks).toString('base64');
+                    let rBase64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+
+                    if ( rBase64regex.test( Buffer.concat(chunks) ) )
+                    {
+                        mediaObj.base64content = Buffer.concat(chunks);
+                    }
+                    else
+                    {
+                        mediaObj.base64content = Buffer.concat(chunks).toString('base64');
+                    }
+                    
                     await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
                 });
                 req.data.content.pipe(stream); // writes data in stream object (writeable)
