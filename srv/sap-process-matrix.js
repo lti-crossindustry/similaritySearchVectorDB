@@ -116,15 +116,13 @@ class ProcessMatrixSrv extends cds.ApplicationService {
             if (url.includes("content")) {
                 const iMediaId = req.data.mediaId;
 
-                // var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content', 'mediaType');
                 var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId });
 
-                if (mediaObj.length <= 0) {
+                if (!mediaObj || (mediaObj && mediaObj.length <= 0)) {
                     req.reject(404, "Media not found for the ID");
                     return;
                 }
                 var decodedMedia = "";
-                // let mediaStr = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content', 'mediaType');
                 let mediaStr = mediaObj.base64content.toString();
                 // mediaStr = mediaStr.toString();
                 decodedMedia = new Buffer.from(
@@ -165,28 +163,39 @@ class ProcessMatrixSrv extends cds.ApplicationService {
 
                 var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId });
 
-                if (mediaObj.length <= 0) {
+                if (!mediaObj || (mediaObj && mediaObj.length <= 0)) {
                     req.reject(404, "Media not found for the ID");
                     return;
                 }
 
                 const stream = new PassThrough();
+                const oContent = req.data.content;
+                mediaObj.content = oContent;
+                // await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
                 const chunks = [];
                 stream.on('data', (chunk) => { chunks.push(chunk) });
                 stream.on('end', async () => {
-                    let rBase64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+                    // let rBase64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
 
-                    if ( rBase64regex.test( Buffer.concat(chunks) ) )
-                    {
-                        mediaObj.base64content = Buffer.concat(chunks);
-                    }
-                    else
-                    {
+                    // if ( rBase64regex.test( oContent ) )
+                    // {
+                    //     mediaObj.base64content = oContent;
+                    // }
+                    // else
+                    // {
                         mediaObj.base64content = Buffer.concat(chunks).toString('base64');
-                    }
-                    
+                        // mediaObj.content = Buffer.concat(chunks).toString('base64');
+                        // mediaObj.content = new Uint8Array(chunks.reduce((acc, chunk) => acc.concat(Array.from(chunk)), []));
+                    // }
+                    // mediaObj.content = oContent;
                     await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
                 });
+                // let rBase64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+
+                // if ( rBase64regex.test( oContent ) )
+                // {
+                //     mediaObj.base64content = oContent;
+                // }
                 req.data.content.pipe(stream); // writes data in stream object (writeable)
 
             } else return next();
