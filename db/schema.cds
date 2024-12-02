@@ -4,9 +4,23 @@ using { managed } from '@sap/cds/common';
 
 entity DocumentChunk {
   key id: String;
-       text_chunk: LargeString;
-    metadata_column: LargeString;
-    embedding: Vector(1536);
+        parentId:String;
+        text_chunk: LargeString;
+        metadata_column: LargeString;
+        embedding: Vector(1536);
+       
+}
+
+entity ProcessDumpDocMedia
+{
+        key mediaId : String;
+        processdumpId:  Association to DocumentChunk;
+        @Core.MediaType: mediaType
+        content: LargeBinary;
+        @Core.IsMediaType: true
+        mediaType : String;
+        fileName  : String;
+        base64content: LargeString;
 }
 entity SAPProcessMatrix
 { 
