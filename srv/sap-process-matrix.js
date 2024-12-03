@@ -148,48 +148,48 @@ class ProcessMatrixSrv extends cds.ApplicationService {
 
         }
 
-        this.on('ProcessDocMediaBase64',async (req) => {
-            let iMediaId = req.data.mediaId;
-            if (!iMediaId || (iMediaId && iMediaId.length <= 0)) {
-                req.reject(404, "Media ID Required");
-                return;
-            }
-            await cds.tx (async ()=>{ 
-            var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content');
+    //     this.on('ProcessDocMediaBase64',async (req) => {
+    //         let iMediaId = req.data.mediaId;
+    //         if (!iMediaId || (iMediaId && iMediaId.length <= 0)) {
+    //             req.reject(404, "Media ID Required");
+    //             return;
+    //         }
+    //         await cds.tx (async ()=>{ 
+    //         var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content');
         
 
-        if (!mediaObj || (mediaObj && mediaObj.length <= 0)) {
-            req.reject(404, "Media not found for the ID");
-            return;
-        }
+    //     if (!mediaObj || (mediaObj && mediaObj.length <= 0)) {
+    //         req.reject(404, "Media not found for the ID");
+    //         return;
+    //     }
 
-        const stream = new PassThrough();
-        const chunks = [];
-        stream.on('data', (chunk) => { chunks.push(chunk) });
-        stream.on('end', async () => {                   
-            // mediaObj.base64content = Buffer.concat(chunks).toString('base64');   
-            let base64content = Buffer.concat(chunks).toString('base64');   
-            await cds.tx (async ()=>{    
-            await UPDATE(ProcessDocMedia, iMediaId).with({ 'base64content': base64content}); // mediaObj
-            // return true;
-            }); 
+    //     const stream = new PassThrough();
+    //     const chunks = [];
+    //     stream.on('data', (chunk) => { chunks.push(chunk) });
+    //     stream.on('end', async () => {                   
+    //         // mediaObj.base64content = Buffer.concat(chunks).toString('base64');   
+    //         let base64content = Buffer.concat(chunks).toString('base64');   
+    //         await cds.tx (async ()=>{    
+    //         await UPDATE(ProcessDocMedia, iMediaId).with({ 'base64content': base64content}); // mediaObj
+    //         // return true;
+    //         }); 
             
-        });
+    //     });
        
-        mediaObj.content.pipe(stream); // writes data in stream object (writeable)
+    //     mediaObj.content.pipe(stream); // writes data in stream object (writeable)
         
 
-    });
-        });
+    // });
+    //     });
 
 
-        this.after("UPDATE", ProcessDocMedia, async (req, next) => {
-            let sMediaId = req.mediaId;  
-            cds.tx (async ()=>{ 
-                this.send('ProcessDocMediaBase64', { mediaId: sMediaId });
-            });
+        // this.after("UPDATE", ProcessDocMedia, async (req, next) => {
+        //     let sMediaId = req.mediaId;  
+        //     cds.tx (async ()=>{ 
+        //         this.send('ProcessDocMediaBase64', { mediaId: sMediaId });
+        //     });
             
-            });
+        //     });
 
         // Method to use V4 version for content upload, it changes readable stream to base64
             // this.on("UPDATE", ProcessDocMedia, async (req, next) => {
