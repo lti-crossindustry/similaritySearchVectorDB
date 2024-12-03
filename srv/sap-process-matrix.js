@@ -1,4 +1,5 @@
 const cds = require('@sap/cds');
+const { log } = require('console');
 const LOG = cds.log('ProcessMatrixSrv');
 // const log = require('cf-nodejs-logging-support')
 // const SequenceHelper = require("./library/SequenceHelper");
@@ -175,8 +176,16 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                 stream.on('data', (chunk) => { chunks.push(chunk) });
                 stream.on('end', async () => {                    
                    
-                    mediaObj.base64content = Buffer.concat(chunks).toString('base64');                     
-                    await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
+                    mediaObj.base64content = Buffer.concat(chunks).toString('base64');
+                    try{
+                        await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
+                    }
+                    catch(err)
+                    {
+                        console.log(err);
+                        log.info(err);
+                    }              
+                    
                     return;
 
                 });
