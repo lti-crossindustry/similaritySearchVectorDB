@@ -148,53 +148,43 @@ class ProcessMatrixSrv extends cds.ApplicationService {
 
         }
 
-        // Method to use V4 version for content upload, it changes readable stream to base64
-        this.on("UPDATE", ProcessDocMedia, async (req, next) => {
-            console.log("in Media Update");
-            if (!req.data.mediaId) {
-                return next();
+        this.on('ProcessDocMediaBase64',async (oData) => {
+            let iMediaId = oData.data.mediaId;
+            if (!iMediaId || (iMediaId && iMediaId.length <= 0)) {
+                req.reject(404, "Media ID Required");
+                return;
             }
-           
-            const url = req._.req.path;
-            //If the request url contains keyword "content" // then read the media content
-            
-            if (url.includes("content")) {
-                const iMediaId = req.data.mediaId;
+            cds.tx (async ()=>{ 
+            var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId }).columns('content');
+        
 
-                var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId });
+        if (!mediaObj || (mediaObj && mediaObj.length <= 0)) {
+            req.reject(404, "Media not found for the ID");
+            return;
+        }
 
-                if (!mediaObj || (mediaObj && mediaObj.length <= 0)) {
-                    req.reject(404, "Media not found for the ID");
-                    return;
-                }
-
-                const stream = new PassThrough();
-                const oContent = req.data.content;
-                mediaObj.content = oContent;
-                // await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
-                const chunks = [];
-                stream.on('data', (chunk) => { chunks.push(chunk) });
-                stream.on('end', async () => {                    
-                   
-                    mediaObj.base64content = Buffer.concat(chunks).toString('base64');
-                    try{
-                        await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
-                    }
-                    catch(err)
-                    {
-                        console.log(err);
-                        log.info(err);
-                    }              
-                    
-                    return;
-
-                });
-               
-                req.data.content.pipe(stream); // writes data in stream object (writeable)
-
-            } else return next();
-
+        const stream = new PassThrough();
+        const chunks = [];
+        stream.on('data', (chunk) => { chunks.push(chunk) });
+        stream.on('end', async () => {                   
+            // mediaObj.base64content = Buffer.concat(chunks).toString('base64');   
+            let base64content = Buffer.concat(chunks).toString('base64');       
+            await UPDATE(ProcessDocMedia, iMediaId).with({ 'base64content': base64content}); // mediaObj
         });
+       
+        mediaObj.content.pipe(stream); // writes data in stream object (writeable)
+        
+
+    });
+        });
+
+
+        this.on("UPDATE", ProcessDocMedia, async (req, next) => {
+            let sMediaId = req.data.mediaId;  
+            this.send('ProcessDocMediaBase64', { mediaId: sMediaId });
+            });
+       
+
 
         this.on("ProcessDocDel", async (oEvent) => {
             console.log("In Attachments Delete");
@@ -208,3 +198,42 @@ class ProcessMatrixSrv extends cds.ApplicationService {
 }
 
 module.exports = ProcessMatrixSrv;
+
+// Method to use V4 version for content upload, it changes readable stream to base64
+// this.on("UPDATE", ProcessDocMedia, async (req, next) => {
+//     console.log("in After Media Update");
+//     if (!req.data.mediaId) {
+//         return next();
+//     }
+//     const url = req._.req.path;
+//     //If the request url contains keyword "content" // then read the media content
+    
+//     if (url.includes("content")) {
+//         const iMediaId = req.data.mediaId;
+//         // const iMediaId = req.mediaId;
+
+//         var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId });
+        
+
+//         if (!mediaObj || (mediaObj && mediaObj.length <= 0)) {
+//             req.reject(404, "Media not found for the ID");
+//             return;
+//         }
+
+//         const stream = new PassThrough();
+//         const chunks = [];
+//         stream.on('data', (chunk) => { chunks.push(chunk) });
+//         stream.on('end', async () => {                   
+//             mediaObj.base64content = Buffer.concat(chunks).toString('base64');       
+//             await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
+//         });
+       
+//         req.data.content.pipe(stream); // writes data in stream object (writeable)
+//         // req.content.pipe(stream); // writes data in stream object (writeable)
+        
+
+
+//     } 
+//     else return next();
+
+// });
