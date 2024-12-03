@@ -111,8 +111,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
             }
             //Fetch the url from where the req is triggered
             const url = req._.req.path;
-            //If the request url contains keyword "content"
-            // then read the media content
+           
             if (url.includes("content")) {
                 const iMediaId = req.data.mediaId;
 
@@ -154,10 +153,10 @@ class ProcessMatrixSrv extends cds.ApplicationService {
             if (!req.data.mediaId) {
                 return next();
             }
-            //Fetch the url from where the req is triggered
+           
             const url = req._.req.path;
-            //If the request url contains keyword "content"
-            // then read the media content
+            //If the request url contains keyword "content" // then read the media content
+            
             if (url.includes("content")) {
                 const iMediaId = req.data.mediaId;
 
@@ -174,28 +173,14 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                 // await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
                 const chunks = [];
                 stream.on('data', (chunk) => { chunks.push(chunk) });
-                stream.on('end', async () => {
-                    // let rBase64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
-
-                    // if ( rBase64regex.test( oContent ) )
-                    // {
-                    //     mediaObj.base64content = oContent;
-                    // }
-                    // else
-                    // {
-                        mediaObj.base64content = Buffer.concat(chunks).toString('base64');
-                        // mediaObj.content = Buffer.concat(chunks).toString('base64');
-                        // mediaObj.content = new Uint8Array(chunks.reduce((acc, chunk) => acc.concat(Array.from(chunk)), []));
-                    // }
-                    // mediaObj.content = oContent;
+                stream.on('end', async () => {                    
+                   
+                    mediaObj.base64content = Buffer.concat(chunks).toString('base64');                     
                     await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
-                });
-                // let rBase64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+                    return;
 
-                // if ( rBase64regex.test( oContent ) )
-                // {
-                //     mediaObj.base64content = oContent;
-                // }
+                });
+               
                 req.data.content.pipe(stream); // writes data in stream object (writeable)
 
             } else return next();
@@ -207,29 +192,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
             await DELETE.from(ProcessDocMedia);
             return true;
         }
-        );
-
-        // this.on("ProcessDocMediaBase64", async (req) => {
-        //     console.log("In ProcessDocMedia base 64");
-        //     let mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: req.data.mediaId }).columns('content');
-        //     // .columns('content', 'mediaType');
-        //     if (mediaObj.length <= 0) {
-        //         req.reject(404, "Media not found for the ID");
-        //         return;
-        //     }
-        //     // const stream = new PassThrough();
-        //     // let stream = mediaObj.base64content;
-        //     // let sBase64;
-        //     // const chunks = [];
-        //     // stream.on('data', (chunk) => { chunks.push(chunk) });
-        //     // stream.on('end', async () => {
-        //     //     sBase64 = Buffer.concat(chunks).toString('base64');
-                
-        //     // });
-        //     // return sBase64;
-        //     return mediaObj.base64content;
-        // }
-        // );
+        );      
 
         return super.init();
     }
