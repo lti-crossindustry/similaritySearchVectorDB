@@ -143,11 +143,12 @@ module.exports = cds.service.impl(async function () {
     const {fileName} = req.data;
     try{
       
+      const sDecodeText=Buffer.from(textFile, 'base64').toString('utf-8')
       const chunkSize = 5000; // Define your chunk size
       const textChunks = [];
       console.log('parentId',parentId);
-      for (let i = 0; i < textFile.length; i += chunkSize) {
-          const chunk = textFile.slice(i, i + chunkSize);
+      for (let i = 0; i < sDecodeText.length; i += chunkSize) {
+          const chunk = sDecodeText.slice(i, i + chunkSize);
           textChunks.push({ pageContent: chunk.toString('utf-8'), startIndex: i });
       }
 
@@ -169,7 +170,7 @@ module.exports = cds.service.impl(async function () {
       
       function generateRandomNumber() {
         // Generate a random number between 10000 and 999999
-        const min = 10000;
+        const min = 1000;
         const max = 999999;
         const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
         return randomNumber;
@@ -180,16 +181,16 @@ module.exports = cds.service.impl(async function () {
 
       // For each text chunk generate the embeddings
       let textChunkEntries = []
-      var j = 47;
+      var j = randomNumber;
       var k = j ;
       for (var i=0; i<textChunks.length; i++) {
-         
+        k =  k+ 1;
+        console.log('UUID',randomNumber);
         const embedding = await vectorPlugin.getEmbedding(textChunks[i].pageContent)
         
-         k = k + 1;
-        console.log('UUID',randomNumber);
+         
          const entry = {
-          "id": randomNumber.toString(),
+          "id": k.toString(),
           "parentId":parentId,
           "text_chunk": textChunks[i].pageContent,
           //"metadata_column": path.resolve('db/data/Standard_Tcode_Library_for_S4_2023_02.csv'),
