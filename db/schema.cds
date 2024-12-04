@@ -39,7 +39,9 @@ entity SAPProcessTree
        nodename: String;
        nodelevel: String;
        parent: String;
+       parentid: String;
        testscripts: String;
+       drillState: String;
        processflow: Association to many ProcessDocMedia on processflow.processId = $self; 
        NavTo_TestScripts   : Composition of many SAPBusinessProcess_TestScripts
                                              on NavTo_TestScripts.ParentID = id;

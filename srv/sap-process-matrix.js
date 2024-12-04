@@ -9,11 +9,12 @@ let sReqId;
 
 class ProcessMatrixSrv extends cds.ApplicationService {
     async init() {
-        // const db = await cds.connect.to('db');
-        const { SAPProcessMatrix, ProcessDocMedia, SAPProcessTree } = this.entities;
+        const db = await cds.connect.to('db');
+        const { ProcessMatrix, ProcessDocMedia, ProcessTree } = this.entities;
         // db.entities('com.ltim.similaritysearch');
 
         this.on('ProcessMatrixTree', async (oEvent) => {
+            const { SAPProcessMatrix, SAPProcessTree } = db.entities('com.ltim.similaritysearch');
             return ProcessMatrixData(SAPProcessMatrix, SAPProcessTree);
         }
         );
@@ -24,6 +25,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
             let aLevel1Parents = [], aLevel2Parents = [], aLevel3Parents = [], aLevel4Parents = [];
             let aLevel1ParentsList = [], aLevel2ParentsList = [], aLevel3ParentsList = [], aLevel4ParentsList = [];
             let oLevel1ParentValue, oLevel2ParentValue, oLevel3ParentValue, oLevel4ParentValue;
+            let level1Count = 0, level2Count = 0, level3Count = 0, level4Count = 0;
             for (let each in oPMesult) {
 
                 let oLevel1ParentValue = oPMesult[each].level1;
@@ -33,40 +35,50 @@ class ProcessMatrixSrv extends cds.ApplicationService {
 
                 if (!aLevel1ParentsList.includes(oLevel1ParentValue)) {
                     aLevel1ParentsList.push(oLevel1ParentValue);
+
                     aLevel1Parents.push({
+                        id: "N1" + level1Count,
                         nodename: oLevel1ParentValue,
                         nodelevel: 1,
                         parent: ""
 
                     }
                     );
+
+                    level1Count++;
                 }
 
                 if (!aLevel2ParentsList.includes(oLevel2ParentValue)) {
                     aLevel2ParentsList.push(oLevel2ParentValue);
+                    
                     aLevel2Parents.push({
+                        id: "N2" + level2Count,
                         nodename: oLevel2ParentValue,
                         nodelevel: 2,
                         parent: oLevel1ParentValue
 
                     }
                     );
+                    level2Count++;
                 }
 
                 if (!aLevel3ParentsList.includes(oLevel3ParentValue)) {
                     aLevel3ParentsList.push(oLevel3ParentValue);
                     aLevel3Parents.push({
+                        id: "N3" + level3Count,
                         nodename: oLevel3ParentValue,
                         nodelevel: 3,
                         parent: oLevel2ParentValue
 
                     }
                     );
+                    level3Count++;
                 }
 
                 if (!aLevel4ParentsList.includes(oLevel4ParentValue)) {
                     aLevel4ParentsList.push(oLevel4ParentValue);
                     aLevel4Parents.push({
+                        id: "N4" + level4Count,
                         nodename: oLevel4ParentValue,
                         nodelevel: 4,
                         parent: oLevel3ParentValue,
@@ -75,22 +87,36 @@ class ProcessMatrixSrv extends cds.ApplicationService {
 
                     }
                     );
+                    level4Count++;
                 }
             }
 
             aLevel1Parents = aLevel1Parents.concat(aLevel2Parents, aLevel3Parents, aLevel4Parents);
-            let nodeId = 0, aTblEnteries = [];
+            let aTblEnteries = []; //nodeId = 0
+            let iParentNodeId ;
             aLevel1Parents.forEach(
                 (node) => {
+                    iParentNodeId = "";
+                    aLevel1Parents.forEach(
+                        (pnode) => {
+                            if(pnode.nodename === node.parent)
+                            {
+                                iParentNodeId = pnode.id;
+                            }
+                        });
+
                     aTblEnteries.push({
-                        id: String("N" + nodeId),
+                        id: String("H" + node.id),
                         nodename: node.nodename,
                         nodelevel: String(node.nodelevel),
                         parent: node.parent,
+                        parentid: iParentNodeId,
                         testscripts: node.testscripts ? node.testscripts : "",
-                        processflow: node.processflow ? node.processflow : ""
+                        processflow: node.processflow ? node.processflow : "",
+                       
+                        drillState: node.nodelevel === "4" ? "leaf" : "expanded"
                     });
-                    nodeId++;
+                    // nodeId++;
                 }
             );
             await DELETE.from(SAPProcessTree);
