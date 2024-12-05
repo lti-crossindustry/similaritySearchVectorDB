@@ -178,7 +178,14 @@ class ProcessMatrixSrv extends cds.ApplicationService {
         );
 
         this.after("UPDATE", ProcessDocMedia, async (req, next) => {
-        let sMediaId = req.mediaId;  
+        let sMediaId = req.mediaId;
+        let sMediaType = req.mediaType;
+        
+        if(sMediaType.indexOf("image") !== -1)
+        {
+            return;
+        }
+
         
         let sImgBase64 = await convertToImgBase64(sMediaId);
 
