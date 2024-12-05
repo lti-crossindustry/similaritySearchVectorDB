@@ -181,7 +181,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
         let sMediaId = req.mediaId;
         let sMediaType = req.mediaType;
         
-        if(sMediaType.indexOf("image") !== -1)
+        if(sMediaType !== "application/pdf")
         {
             return;
         }
