@@ -127,10 +127,6 @@ class ProcessMatrixSrv extends cds.ApplicationService {
             return "Master Data Table - SAPProcessTree updated";
         }
 
-        /**
-         * Handler method called on reading data entry
-         * for entity ProcessDocMedia.
-         **/
         this.on("READ", ProcessDocMedia, async (req, next) => {
             console.log("in Media Read");
             if (!req.data.mediaId) {
@@ -172,9 +168,57 @@ class ProcessMatrixSrv extends cds.ApplicationService {
             }
 
 
+        }   
+
+        this.on("ProcessDocDel", async (oEvent) => {
+            console.log("In Attachments Delete");
+            await DELETE.from(ProcessDocMedia);
+            return true;
+        }
+        );
+
+        this.after("UPDATE", ProcessDocMedia, async (req, next) => {
+        let sMediaId = req.mediaId;  
+        
+        let sImgBase64 = await convertToImgBase64(sMediaId);
+
+        cds.tx (async ()=>{ 
+            await UPDATE (ProcessDocMedia, sMediaId).with({ base64ImgContent: sImgBase64 });
+        });
+        
+        });
+        
+        
+        async function convertToImgBase64 (sMediaId){
+        
+        var mediaObj;
+        await cds.tx (async ()=>{ 
+        mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: sMediaId }).columns('base64content');
+        });
+        
+        if (!mediaObj || (mediaObj && mediaObj.length <= 0)) {
+            return;
+        }
+        const { PdfToImg } = require("pdftoimg-js");
+
+        const pdfBase64 = mediaObj.base64content;
+        const pdfBuffer = Buffer.from(pdfBase64, 'base64');
+        
+        let sImage;        
+        sImage = await PdfToImg(pdfBuffer);
+        sImage = sImage[0];
+        return Promise.resolve(sImage);
         }
 
-    //     this.on('ProcessDocMediaBase64',async (req) => {
+
+        return super.init();
+    }
+}
+
+module.exports = ProcessMatrixSrv;
+
+
+//     this.on('ProcessDocMediaBase64',async (req) => {
     //         let iMediaId = req.data.mediaId;
     //         if (!iMediaId || (iMediaId && iMediaId.length <= 0)) {
     //             req.reject(404, "Media ID Required");
@@ -258,57 +302,3 @@ class ProcessMatrixSrv extends cds.ApplicationService {
             //     else return next();
 
             // });
-       
-
-
-        this.on("ProcessDocDel", async (oEvent) => {
-            console.log("In Attachments Delete");
-            await DELETE.from(ProcessDocMedia);
-            return true;
-        }
-        );      
-
-        return super.init();
-    }
-}
-
-module.exports = ProcessMatrixSrv;
-
-// Method to use V4 version for content upload, it changes readable stream to base64
-// this.on("UPDATE", ProcessDocMedia, async (req, next) => {
-//     console.log("in After Media Update");
-//     if (!req.data.mediaId) {
-//         return next();
-//     }
-//     const url = req._.req.path;
-//     //If the request url contains keyword "content" // then read the media content
-    
-//     if (url.includes("content")) {
-//         const iMediaId = req.data.mediaId;
-//         // const iMediaId = req.mediaId;
-
-//         var mediaObj = await SELECT.one.from(ProcessDocMedia).where({ mediaId: iMediaId });
-        
-
-//         if (!mediaObj || (mediaObj && mediaObj.length <= 0)) {
-//             req.reject(404, "Media not found for the ID");
-//             return;
-//         }
-
-//         const stream = new PassThrough();
-//         const chunks = [];
-//         stream.on('data', (chunk) => { chunks.push(chunk) });
-//         stream.on('end', async () => {                   
-//             mediaObj.base64content = Buffer.concat(chunks).toString('base64');       
-//             await UPDATE(ProcessDocMedia, iMediaId).with(mediaObj);
-//         });
-       
-//         req.data.content.pipe(stream); // writes data in stream object (writeable)
-//         // req.content.pipe(stream); // writes data in stream object (writeable)
-        
-
-
-//     } 
-//     else return next();
-
-// });

@@ -30,7 +30,8 @@
     "pdf-parse": "^1.1.1",
     "pdfkit": "^0.14.0",
     "stream": "^0.0.3",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "pdftoimg-js":"^0.0.2"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^1",

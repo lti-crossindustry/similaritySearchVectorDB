@@ -57,6 +57,7 @@ entity ProcessDocMedia
         mediaType : String;
         fileName  : String;
         base64content: LargeString;
+        base64ImgContent: LargeString;
 }
 
 entity SAPBusinessProcess_TestScripts {
