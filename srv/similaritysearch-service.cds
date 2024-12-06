@@ -3,6 +3,7 @@ service SimilaritySearchService {
 
      entity ProcessTree as projection on db.SAPProcessTree;
      entity ProcessDocMedia as projection on db.ProcessDocMedia;
+     entity SAPProcessFlowMassUpload as projection on db.SAPProcessFlowMassUpload;
      entity SAPBusinessProcess_TestScripts as projection on db.SAPBusinessProcess_TestScripts;
      entity SAPTestScripts_Preconditions as projection on db.SAPTestScripts_Preconditions;
      entity SAPTestScripts_TestSteps as projection on db.SAPTestScripts_TestSteps;

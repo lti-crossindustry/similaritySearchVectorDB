@@ -92,3 +92,21 @@ entity SAPTestScripts_ExpResults {
         expectedResults      : String; 
         ParentID           : String(36); 
 }
+
+entity SAPProcessFlowMassUpload
+{
+   key id: String;
+        businessProcessName: String;
+        @Core.MediaType: mediaType
+        content: LargeBinary;
+        @Core.IsMediaType: true
+        mediaType : String;
+        fileName  : String;
+        base64content: LargeString;
+        base64ImgContent: LargeString;
+        testscripts: String;
+        status: String;
+        createdAt : Timestamp @default: 'CURRENT_TIMESTAMP';
+        NavTo_TestScripts   : Composition of many SAPBusinessProcess_TestScripts
+                                             on NavTo_TestScripts.ParentID = id;
+}
