@@ -61,7 +61,7 @@ entity ProcessDocMedia
 }
 
 entity SAPBusinessProcess_TestScripts {
-        key sNo            : UUID;
+        key sNo            : String;
         ParentID           : String(36); 
         testCaseID         : String;
         objective          : String; 
@@ -76,19 +76,19 @@ entity SAPBusinessProcess_TestScripts {
 }
 
 entity SAPTestScripts_Preconditions {
-        key sNo            : UUID;
+        key sNo            : String;
         preconditions      : String; 
         ParentID           : String(36); 
 }
 
 entity SAPTestScripts_TestSteps {
-        key sNo            : UUID;
+        key sNo            : String;
         testSteps      : String; 
         ParentID           : String(36); 
 }
 
 entity SAPTestScripts_ExpResults {
-        key sNo            : UUID;
+        key sNo            : String;
         expectedResults      : String; 
         ParentID           : String(36); 
 }
@@ -97,16 +97,12 @@ entity SAPProcessFlowMassUpload
 {
    key id: String;
         businessProcessName: String;
-        @Core.MediaType: mediaType
-        content: LargeBinary;
-        @Core.IsMediaType: true
-        mediaType : String;
         fileName  : String;
+        fileType: String;
         base64content: LargeString;
         base64ImgContent: LargeString;
         testscripts: String;
         status: String;
-        createdAt : Timestamp @default: 'CURRENT_TIMESTAMP';
         NavTo_TestScripts   : Composition of many SAPBusinessProcess_TestScripts
                                              on NavTo_TestScripts.ParentID = id;
 }
