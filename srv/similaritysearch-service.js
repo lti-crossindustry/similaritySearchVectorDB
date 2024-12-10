@@ -36,7 +36,7 @@ module.exports = function() {
             contentColumn,
             embeddings,
             'L2DISTANCE',
-            3
+            10
         )
         return similaritySearchResults
     })
