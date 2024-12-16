@@ -37,10 +37,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                 let sCurrCompositeKey = oLevel1Value + oLevel2Value + oLevel3Value + oLevel4Value;
                 sCurrCompositeKey = sCurrCompositeKey.replaceAll(" ","_").toLowerCase();
                 
-                // if(sCurrCompositeKey === "service_managementmaster_databusiness_partnervendor_master")
-                // {
-                //     console.log("Error Node");
-                // }
+                
 
                 if( !aComposeKeyList.includes(sCurrCompositeKey) )
                 {          
@@ -77,33 +74,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                     });
                     level2Count++;
                 }
-                // else
-                // { //Same name Node already exist 
-                        
-                //         let bNodeParent = true;
-                       
-                //         for(let item in aLevel2Parents)
-                //         {
-                //             if( aLevel2Parents[item].nodename === oLevel2Value && aLevel2Parents[item].parent === oLevel1Value)
-                //             {
-                //                 bNodeParent = false;
-                //             }
-                //         }
-                       
-                //         if(bNodeParent)
-                //         {                    
-                //             aLevel2Parents.push({
-                //                 id: "N2" + level2Count,
-                //                 nodename: oLevel2Value,
-                //                 nodelevel: 2,
-                //                 parent: oLevel1Value,
-                //                 composeKey: sCurrCompositeKey
-        
-                //             });
-                //             level2Count++;
-                //         }
-                   
-                // }
+                
                 
                 let sLevel3CompKey = (oLevel1Value + oLevel2Value + oLevel3Value).replaceAll(" ","_").toLowerCase();
                 if (!aLevel3List.includes(sLevel3CompKey)) {
@@ -119,52 +90,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                     });
                     level3Count++;
                 }
-                // else
-                // {
-                //         let aSecondLevelParents = [], oSecondLevelPar;
-                //         for(let item in aLevel3Parents)
-                //             {
-                //                 if( aLevel3Parents[item].nodename === oLevel3Value)
-                //                 {
-                //                     aSecondLevelParents.push(aLevel3Parents[item]);
-                //                 }
-                //             }
-
-                //         let aFirstLevelParents, oFirstLevelPar;
-                //         for(let item in aLevel2Parents)
-                //             {
-                //                 for(let item2 in aSecondLevelParents)
-                //                 {
-                //                     if( aLevel2Parents[item].nodename === aSecondLevelParents[item2].parent)
-                //                         {
-                //                             if( aLevel2Parents[item].parent === oLevel1Value)
-                //                             {
-                //                                 oFirstLevelPar = aLevel2Parents[item].parent;
-                //                                 oSecondLevelPar = aSecondLevelParents[item2].parent;
-                //                             }                                         
-                //                           }
-                //                 }                                
-                //             }                      
-
-                //         if(
-                //             oSecondLevelPar !== oLevel2Value
-                //              ||  oFirstLevelPar !== oLevel1Value )
-                //         {
-                //             // aLevel2List.push(oLevel2Value);
-                    
-                //             aLevel3Parents.push({
-                //                 id: "N3" + level3Count,
-                //                 nodename: oLevel3Value,
-                //                 nodelevel: 3,
-                //                 parent: oLevel2Value,
-                //                 composeKey: sCurrCompositeKey
-        
-                //             }
-                //             );
-                //             level3Count++;
-                //         }
-                   
-                // }
+              
 
                 if (!aLevel4List.includes(sCurrCompositeKey)) {
                     aLevel4List.push(sCurrCompositeKey);
@@ -182,37 +108,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                     );
                     level4Count++;
                 }
-                // else
-                // {
-
-                //         let oNodeComposeKey;
-                //         for(let item in aLevel4Parents)
-                //         {
-                //             if(aLevel4Parents[item].composeKey === sCurrCompositeKey)
-                //             {
-                //                 oNodeComposeKey = aLevel4Parents[item].composeKey; 
-                //             }
-                //         }
-
-                //         if(oNodeComposeKey !== sCurrCompositeKey)
-                //         {
-                //             // aLevel2List.push(oLevel2Value);
-                    
-                //             aLevel4Parents.push({
-                //                 id: "N4" + level4Count,
-                //                 nodename: oLevel4Value,
-                //                 nodelevel: 4,
-                //                 parent: oLevel3Value,
-                //                 testscripts: oPMesult[each].testscripts,
-                //                 processflow: oPMesult[each].processflow,
-                //                 composeKey: sCurrCompositeKey
-        
-                //             }
-                //             );
-                //             level4Count++;
-                //         }
-                   
-                // }
+              
 
                 aComposeKeyList.push( sCurrCompositeKey );
             }
