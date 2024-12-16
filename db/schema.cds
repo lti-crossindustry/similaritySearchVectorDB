@@ -21,6 +21,7 @@ entity ProcessDumpDocMedia
         mediaType : String;
         fileName  : String;
         base64content: LargeString;
+        base64ImgContent: LargeString;
 }
 entity SAPProcessMatrix
 { 

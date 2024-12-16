@@ -143,6 +143,7 @@ module.exports = cds.service.impl(async function () {
     const {fileName} = req.data;
     try{
       
+
       const sDecodeText=Buffer.from(textFile, 'base64').toString('utf-8')
       const chunkSize = 5000; // Define your chunk size
       const textChunks = [];
@@ -216,5 +217,22 @@ module.exports = cds.service.impl(async function () {
       return `Error while generating and storing vector embeddings`
       throw error
     }
+});
+this.on('storeFiles', async (req) => {
+  const {base64content} = req.data;
+  const {parentId} = req.data;
+  const {fileName} = req.data;
+  const {mediaType} = req.data;
+  const { ProcessDumpDocMedia } = this.entities;
+    await INSERT.into(ProcessDumpDocMedia).entries({
+        ID: cds.utils.uuid(),
+        base64content: base64content,
+        parentId: parentId,
+        fileName:fileName,
+        mediaType:mediaType
+    });
+
+    return { message: 'File uploaded successfully' };
+
 });
 });
