@@ -222,6 +222,7 @@ this.on('storeFiles', async (req) => {
   const {base64content} = req.data;
   const {parentId} = req.data;
   const {fileName} = req.data;
+  //sasas
   const {mediaType} = req.data;
   const { ProcessDumpDocMedia } = this.entities;
     await INSERT.into(ProcessDumpDocMedia).entries({
