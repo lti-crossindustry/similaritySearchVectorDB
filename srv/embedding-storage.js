@@ -7,7 +7,7 @@ const path = require('path')
 const fs = require('fs')
 const { Document, Packer, Paragraph, TextRun } = require('docx');
 const { uuid } = require('@sap/cds/lib/utils/cds-utils')
-  
+
 // Helper method to convert embeddings to buffer for insertion
 let array2VectorBuffer = (data) => {
   const sizeFloat = 4
@@ -43,6 +43,9 @@ let deleteIfExists = (filePath) => {
 }
 
 module.exports = cds.service.impl(async function () {
+  
+  ProcessDocMedia = this.entities;
+  
   this.on('storeEmbeddings', async (req) => {
     const {textFile} = req.data;
     const {parentId} = req.data;
@@ -236,7 +239,8 @@ module.exports = cds.service.impl(async function () {
     return { message: 'File uploaded successfully' };
 
   });
-
+  // Assign ProcessDumpDocMedia to this.entities
+  const { ProcessDumpDocMedia } = this.entities;
   this.after("UPDATE",ProcessDumpDocMedia,async (req) => {
             let iMediaId = req.data.mediaId;
             if (!iMediaId || (iMediaId && iMediaId.length <= 0)) {
