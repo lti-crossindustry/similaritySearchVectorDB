@@ -23,24 +23,38 @@ class ProcessMatrixSrv extends cds.ApplicationService {
 
             let oPMesult = await SELECT.from(SAPProcessMatrix);
             let aLevel1Parents = [], aLevel2Parents = [], aLevel3Parents = [], aLevel4Parents = [];
-            let aLevel1ParentsList = [], aLevel2ParentsList = [], aLevel3ParentsList = [], aLevel4ParentsList = [];
-            let oLevel1ParentValue, oLevel2ParentValue, oLevel3ParentValue, oLevel4ParentValue;
+            let aLevel1List = [], aLevel2List = [], aLevel3List = [], aLevel4List = [], aRepeatData = [];
+            let oLevel1Value, oLevel2Value, oLevel3Value, oLevel4Value;
+            let aComposeKeyList = [];
             let level1Count = 0, level2Count = 0, level3Count = 0, level4Count = 0;
             for (let each in oPMesult) {
 
-                let oLevel1ParentValue = oPMesult[each].level1;
-                let oLevel2ParentValue = oPMesult[each].level2;
-                let oLevel3ParentValue = oPMesult[each].level3;
-                let oLevel4ParentValue = oPMesult[each].level4;
+                let oLevel1Value = oPMesult[each].level1;
+                let oLevel2Value = oPMesult[each].level2;
+                let oLevel3Value = oPMesult[each].level3;
+                let oLevel4Value = oPMesult[each].level4;
 
-                if (!aLevel1ParentsList.includes(oLevel1ParentValue)) {
-                    aLevel1ParentsList.push(oLevel1ParentValue);
+                let sCurrCompositeKey = oLevel1Value + oLevel2Value + oLevel3Value + oLevel4Value;
+                sCurrCompositeKey = sCurrCompositeKey.replaceAll(" ","_").toLowerCase();
+                
+                // if(sCurrCompositeKey === "service_managementmaster_databusiness_partnervendor_master")
+                // {
+                //     console.log("Error Node");
+                // }
+
+                if( !aComposeKeyList.includes(sCurrCompositeKey) )
+                {          
+                
+                let sLevel1CompKey = (oLevel1Value).replaceAll(" ","_").toLowerCase();
+                if (!aLevel1List.includes(sLevel1CompKey)) {
+                    aLevel1List.push(sLevel1CompKey);
 
                     aLevel1Parents.push({
                         id: "N1" + level1Count,
-                        nodename: oLevel1ParentValue,
+                        nodename: oLevel1Value,
                         nodelevel: 1,
-                        parent: ""
+                        parent: "",
+                        composeKey: sLevel1CompKey
 
                     }
                     );
@@ -48,47 +62,160 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                     level1Count++;
                 }
 
-                if (!aLevel2ParentsList.includes(oLevel2ParentValue)) {
-                    aLevel2ParentsList.push(oLevel2ParentValue);
+                let sLevel2CompKey = (oLevel1Value + oLevel2Value).replaceAll(" ","_").toLowerCase();
+                if (!aLevel2List.includes(sLevel2CompKey)) { 
+                    aLevel2List.push(sLevel2CompKey);
                     
                     aLevel2Parents.push({
                         id: "N2" + level2Count,
-                        nodename: oLevel2ParentValue,
+                        nodename: oLevel2Value,
                         nodelevel: 2,
-                        parent: oLevel1ParentValue
+                        parent: oLevel1Value,
+                        parentCompKey: sLevel1CompKey,
+                        composeKey: sLevel2CompKey
 
-                    }
-                    );
+                    });
                     level2Count++;
                 }
-
-                if (!aLevel3ParentsList.includes(oLevel3ParentValue)) {
-                    aLevel3ParentsList.push(oLevel3ParentValue);
+                // else
+                // { //Same name Node already exist 
+                        
+                //         let bNodeParent = true;
+                       
+                //         for(let item in aLevel2Parents)
+                //         {
+                //             if( aLevel2Parents[item].nodename === oLevel2Value && aLevel2Parents[item].parent === oLevel1Value)
+                //             {
+                //                 bNodeParent = false;
+                //             }
+                //         }
+                       
+                //         if(bNodeParent)
+                //         {                    
+                //             aLevel2Parents.push({
+                //                 id: "N2" + level2Count,
+                //                 nodename: oLevel2Value,
+                //                 nodelevel: 2,
+                //                 parent: oLevel1Value,
+                //                 composeKey: sCurrCompositeKey
+        
+                //             });
+                //             level2Count++;
+                //         }
+                   
+                // }
+                
+                let sLevel3CompKey = (oLevel1Value + oLevel2Value + oLevel3Value).replaceAll(" ","_").toLowerCase();
+                if (!aLevel3List.includes(sLevel3CompKey)) {
+                    aLevel3List.push(sLevel3CompKey);
                     aLevel3Parents.push({
                         id: "N3" + level3Count,
-                        nodename: oLevel3ParentValue,
+                        nodename: oLevel3Value,
                         nodelevel: 3,
-                        parent: oLevel2ParentValue
+                        parent: oLevel2Value,
+                        parentCompKey:sLevel2CompKey,
+                        composeKey: sLevel3CompKey
 
-                    }
-                    );
+                    });
                     level3Count++;
                 }
+                // else
+                // {
+                //         let aSecondLevelParents = [], oSecondLevelPar;
+                //         for(let item in aLevel3Parents)
+                //             {
+                //                 if( aLevel3Parents[item].nodename === oLevel3Value)
+                //                 {
+                //                     aSecondLevelParents.push(aLevel3Parents[item]);
+                //                 }
+                //             }
 
-                if (!aLevel4ParentsList.includes(oLevel4ParentValue)) {
-                    aLevel4ParentsList.push(oLevel4ParentValue);
+                //         let aFirstLevelParents, oFirstLevelPar;
+                //         for(let item in aLevel2Parents)
+                //             {
+                //                 for(let item2 in aSecondLevelParents)
+                //                 {
+                //                     if( aLevel2Parents[item].nodename === aSecondLevelParents[item2].parent)
+                //                         {
+                //                             if( aLevel2Parents[item].parent === oLevel1Value)
+                //                             {
+                //                                 oFirstLevelPar = aLevel2Parents[item].parent;
+                //                                 oSecondLevelPar = aSecondLevelParents[item2].parent;
+                //                             }                                         
+                //                           }
+                //                 }                                
+                //             }                      
+
+                //         if(
+                //             oSecondLevelPar !== oLevel2Value
+                //              ||  oFirstLevelPar !== oLevel1Value )
+                //         {
+                //             // aLevel2List.push(oLevel2Value);
+                    
+                //             aLevel3Parents.push({
+                //                 id: "N3" + level3Count,
+                //                 nodename: oLevel3Value,
+                //                 nodelevel: 3,
+                //                 parent: oLevel2Value,
+                //                 composeKey: sCurrCompositeKey
+        
+                //             }
+                //             );
+                //             level3Count++;
+                //         }
+                   
+                // }
+
+                if (!aLevel4List.includes(sCurrCompositeKey)) {
+                    aLevel4List.push(sCurrCompositeKey);
                     aLevel4Parents.push({
                         id: "N4" + level4Count,
-                        nodename: oLevel4ParentValue,
+                        nodename: oLevel4Value,
                         nodelevel: 4,
-                        parent: oLevel3ParentValue,
+                        parent: oLevel3Value,
+                        parentCompKey:sLevel3CompKey,
                         testscripts: oPMesult[each].testscripts,
-                        processflow: oPMesult[each].processflow
+                        processflow: oPMesult[each].processflow,
+                        composeKey: sCurrCompositeKey
 
                     }
                     );
                     level4Count++;
                 }
+                // else
+                // {
+
+                //         let oNodeComposeKey;
+                //         for(let item in aLevel4Parents)
+                //         {
+                //             if(aLevel4Parents[item].composeKey === sCurrCompositeKey)
+                //             {
+                //                 oNodeComposeKey = aLevel4Parents[item].composeKey; 
+                //             }
+                //         }
+
+                //         if(oNodeComposeKey !== sCurrCompositeKey)
+                //         {
+                //             // aLevel2List.push(oLevel2Value);
+                    
+                //             aLevel4Parents.push({
+                //                 id: "N4" + level4Count,
+                //                 nodename: oLevel4Value,
+                //                 nodelevel: 4,
+                //                 parent: oLevel3Value,
+                //                 testscripts: oPMesult[each].testscripts,
+                //                 processflow: oPMesult[each].processflow,
+                //                 composeKey: sCurrCompositeKey
+        
+                //             }
+                //             );
+                //             level4Count++;
+                //         }
+                   
+                // }
+
+                aComposeKeyList.push( sCurrCompositeKey );
+            }
             }
 
             aLevel1Parents = aLevel1Parents.concat(aLevel2Parents, aLevel3Parents, aLevel4Parents);
@@ -99,7 +226,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                     iParentNodeId = "";
                     aLevel1Parents.forEach(
                         (pnode) => {
-                            if(pnode.nodename === node.parent)
+                            if(pnode.composeKey === node.parentCompKey)
                             {
                                 iParentNodeId = pnode.id;
                             }
@@ -110,7 +237,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                         nodename: node.nodename,
                         nodelevel: String(node.nodelevel),
                         parent: node.parent,
-                        parentid: iParentNodeId,
+                        parentid: String("H" + iParentNodeId) ,
                         testscripts: node.testscripts ? node.testscripts : "",
                         processflow: node.processflow ? node.processflow : "",
                        
