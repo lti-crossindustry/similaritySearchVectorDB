@@ -6,6 +6,4 @@ service EmbeddingStorageService {
     function deleteEmbeddings() returns String;
     action uploadFile(textFile: LargeString, parentId:String, fileName:String) returns String;
     entity ProcessDumpDocMedia as projection on db.ProcessDumpDocMedia;
-    action storeFiles(base64content: LargeBinary, parentId:String, fileName:String, mediaType : String) returns String;
-
 }

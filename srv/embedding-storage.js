@@ -217,8 +217,8 @@ module.exports = cds.service.impl(async function () {
       return `Error while generating and storing vector embeddings`
       throw error
     }
-});
-this.on('storeFiles', async (req) => {
+  });
+  this.on('storeFiles', async (req) => {
   const {base64content} = req.data;
   const {parentId} = req.data;
   const {fileName} = req.data;
@@ -235,5 +235,39 @@ this.on('storeFiles', async (req) => {
 
     return { message: 'File uploaded successfully' };
 
-});
+  });
+
+  this.after("UPDATE",ProcessDumpDocMedia,async (req) => {
+            let iMediaId = req.data.mediaId;
+            if (!iMediaId || (iMediaId && iMediaId.length <= 0)) {
+                req.reject(404, "Media ID Required");
+                return;
+            }
+            await cds.tx (async ()=>{ 
+            var mediaObj = await SELECT.one.from(ProcessDumpDocMedia).where({ mediaId: iMediaId }).columns('content');
+        
+
+        if (!mediaObj || (mediaObj && mediaObj.length <= 0)) {
+            req.reject(404, "Media not found for the ID");
+            return;
+        }
+
+        const stream = new PassThrough();
+        const chunks = [];
+        stream.on('data', (chunk) => { chunks.push(chunk) });
+        stream.on('end', async () => {                   
+            // mediaObj.base64content = Buffer.concat(chunks).toString('base64');   
+            let base64content = Buffer.concat(chunks).toString('base64');   
+            await cds.tx (async ()=>{    
+            await UPDATE(ProcessDocMedia, iMediaId).with({ 'base64content': base64content}); // mediaObj
+            // return true;
+            }); 
+            
+        });
+       
+        mediaObj.content.pipe(stream); // writes data in stream object (writeable)
+        
+
+    });
+        });
 });
