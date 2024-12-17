@@ -136,10 +136,10 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                         nodename: node.nodename,
                         nodelevel: String(node.nodelevel),
                         parent: node.parent,
-                        parentid: String("H" + iParentNodeId) ,
+                        parentid: iParentNodeId ? String("H" + iParentNodeId) : "" ,
                         testscripts: node.testscripts ? node.testscripts : "",
                         processflow: node.processflow ? node.processflow : "",
-                       
+                        // composeKey: node.composeKey,
                         drillState: node.nodelevel === "4" ? "leaf" : "expanded"
                     });
                     // nodeId++;
