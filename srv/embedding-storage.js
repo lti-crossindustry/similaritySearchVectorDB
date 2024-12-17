@@ -242,6 +242,7 @@ module.exports = cds.service.impl(async function () {
   // Assign ProcessDumpDocMedia to this.entities
   const { ProcessDumpDocMedia } = this.entities;
   this.after("UPDATE",ProcessDumpDocMedia,async (req) => {
+            console.log("Data", req.data);
             let iMediaId = req.data.mediaId;
             console.log("MediaID",iMediaId);
             if (!iMediaId || (iMediaId && iMediaId.length <= 0)) {
