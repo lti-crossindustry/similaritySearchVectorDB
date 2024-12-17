@@ -7,6 +7,7 @@ const path = require('path')
 const fs = require('fs')
 const { Document, Packer, Paragraph, TextRun } = require('docx');
 const { uuid } = require('@sap/cds/lib/utils/cds-utils')
+const { Readable, PassThrough } = require("stream");
 
 // Helper method to convert embeddings to buffer for insertion
 let array2VectorBuffer = (data) => {
@@ -249,12 +250,13 @@ module.exports = cds.service.impl(async function () {
           }
          
 
-            console.log("Request Data", JSON.stringify(req));
+            console.log("Request Data", req.mediaId);
+           // console.log("Request Data 1", req.data.mediaId);
             //Fetch the url from where the req is triggered
            // const url = req._.req.path;
             //console.log("url", url);
            // if (url.includes("content")) {
-              const iMediaId = req.data.mediaId;
+              const iMediaId = req.mediaId;
            // }
 //else{
           //    const iMediaId = 'A1';
@@ -287,7 +289,7 @@ module.exports = cds.service.impl(async function () {
             
         });
        
-        mediaObj.content.pipe(stream); // writes data in stream object (writeable)
+      //  mediaObj.content.pipe(stream); // writes data in stream object (writeable)
         
 
     });
