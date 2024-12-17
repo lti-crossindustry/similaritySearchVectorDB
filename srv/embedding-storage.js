@@ -263,7 +263,7 @@ module.exports = cds.service.impl(async function () {
             // mediaObj.base64content = Buffer.concat(chunks).toString('base64');   
             let base64content = Buffer.concat(chunks).toString('base64');   
             await cds.tx (async ()=>{    
-            await UPDATE(ProcessDocMedia, iMediaId).with({ 'base64content': base64content}); // mediaObj
+            await UPDATE(ProcessDumpDocMedia, iMediaId).with({ 'base64content': base64content}); // mediaObj
             // return true;
             }); 
             
