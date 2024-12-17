@@ -27,7 +27,10 @@ class ProcessMatrixSrv extends cds.ApplicationService {
             let oLevel1Value, oLevel2Value, oLevel3Value, oLevel4Value;
             let aComposeKeyList = [];
             let level1Count = 0, level2Count = 0, level3Count = 0, level4Count = 0;
+            let aUpsertData = [];
             for (let each in oPMesult) {
+
+                
 
                 let oLevel1Value = oPMesult[each].level1;
                 let oLevel2Value = oPMesult[each].level2;
@@ -35,8 +38,11 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                 let oLevel4Value = oPMesult[each].level4;
 
                 let sCurrCompositeKey = oLevel1Value + oLevel2Value + oLevel3Value + oLevel4Value;
-                sCurrCompositeKey = sCurrCompositeKey.replaceAll(" ","_").toLowerCase();
-                
+                if(sCurrCompositeKey)
+                sCurrCompositeKey = replaceChar(sCurrCompositeKey);
+
+                aUpsertData.push({ id: oPMesult[each].id, composekey: String(sCurrCompositeKey)  });
+
                 if(sCurrCompositeKey=== "enterprise_asset_managementshutdown_maintenance_processnotification_processcreate_a_shutdown_maintenance_notification_with_revision")
                 {
                     console.log("Checking Entry");
@@ -45,7 +51,8 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                 if( !aComposeKeyList.includes(sCurrCompositeKey) )
                 {          
                 
-                let sLevel1CompKey = (oLevel1Value).replaceAll(" ","_").toLowerCase();
+                    // console.log(oLevel1Value);
+                let sLevel1CompKey = replaceChar(oLevel1Value)
                 if (oLevel1Value && !aLevel1List.includes(sLevel1CompKey)) {
                     aLevel1List.push(sLevel1CompKey);
 
@@ -62,7 +69,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                     level1Count++;
                 }
 
-                let sLevel2CompKey = (oLevel1Value + oLevel2Value).replaceAll(" ","_").toLowerCase();
+                let sLevel2CompKey = replaceChar(oLevel1Value + oLevel2Value)
                 if (oLevel2Value && !aLevel2List.includes(sLevel2CompKey)) { 
                     aLevel2List.push(sLevel2CompKey);
                     
@@ -79,7 +86,7 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                 }
                 
                 
-                let sLevel3CompKey = (oLevel1Value + oLevel2Value + oLevel3Value).replaceAll(" ","_").toLowerCase();
+                let sLevel3CompKey = replaceChar(oLevel1Value + oLevel2Value + oLevel3Value)
                 if (oLevel3Value && !aLevel3List.includes(sLevel3CompKey)) {
                     aLevel3List.push(sLevel3CompKey);
                     aLevel3Parents.push({
@@ -136,21 +143,30 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                         nodename: node.nodename,
                         nodelevel: String(node.nodelevel),
                         parent: node.parent,
-                        parentid: iParentNodeId ? String("H" + iParentNodeId) : "" ,
+                        parentid: (iParentNodeId.trim() !== "") ? String("H" + iParentNodeId) : "" ,
                         testscripts: node.testscripts ? node.testscripts : "",
                         processflow: node.processflow ? node.processflow : "",
-                        // composeKey: node.composeKey,
                         drillState: node.nodelevel === "4" ? "leaf" : "expanded"
                     });
                     // nodeId++;
                 }
             );
+
+            // await UPSERT.into (SAPProcessMatrix).entries(aUpsertData);
+            await UPSERT (aUpsertData).into(SAPProcessMatrix);
             await DELETE.from(SAPProcessTree);
             let oTblData = await SELECT.from(SAPProcessTree);
             console.log("After Delete Table enteries - " + oTblData);
 
             await INSERT.into(SAPProcessTree).entries(aTblEnteries);
             return "Master Data Table - SAPProcessTree updated";
+        }
+
+        function replaceChar(sChar)
+        {
+            if(sChar)
+            return (sChar.replaceAll(" ","_").toLowerCase());
+            else return sChar;
         }
 
         this.on("READ", ProcessDocMedia, async (req, next) => {

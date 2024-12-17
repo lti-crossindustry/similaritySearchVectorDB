@@ -24,13 +24,14 @@ entity ProcessDumpDocMedia
         base64ImgContent: LargeString;
 }
 entity SAPProcessMatrix { 
-    id: String;
-    key level1: String;
-    key level2: String;
-    key level3: String;
-    key level4: String;
+    key id: String;
+    level1: String;
+    level2: String;
+    level3: String;
+    level4: String;
     testscripts: String;
-    processflow: String;       
+    processflow: String;
+    composekey: String;
 }
 
 entity SAPProcessTree
