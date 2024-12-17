@@ -242,16 +242,23 @@ module.exports = cds.service.impl(async function () {
   // Assign ProcessDumpDocMedia to this.entities
   const { ProcessDumpDocMedia } = this.entities;
   this.after("UPDATE",ProcessDumpDocMedia,async (req) => {
-            console.log("Data", req);
+
+            if (!req) {
+              console.error("Request object is undefined");
+              return;
+          }
+         
+
+            console.log("Request Data", JSON.stringify(req));
             //Fetch the url from where the req is triggered
-            const url = req._.req.path;
-            console.log("url", url);
-            if (url.includes("content")) {
+           // const url = req._.req.path;
+            //console.log("url", url);
+           // if (url.includes("content")) {
               const iMediaId = req.data.mediaId;
-            }
-            else{
-              const iMediaId = 'A1';
-            }
+           // }
+//else{
+          //    const iMediaId = 'A1';
+           // }
            
             console.log("MediaID",iMediaId);
             if (!iMediaId || (iMediaId && iMediaId.length <= 0)) {
