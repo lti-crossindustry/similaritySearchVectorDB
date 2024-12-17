@@ -8,6 +8,8 @@ service SimilaritySearchService {
      entity SAPTestScripts_Preconditions as projection on db.SAPTestScripts_Preconditions;
      entity SAPTestScripts_TestSteps as projection on db.SAPTestScripts_TestSteps;
      entity SAPTestScripts_ExpResults as projection on db.SAPTestScripts_ExpResults;
+     entity systemCollection as projection on db.systemCollection;
+     entity systemVersion as projection on db.systemVersion;
 
     function getRagResponse()                                 returns String;
     action executeSimilaritySearch(userQuery : String)      returns String;

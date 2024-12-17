@@ -102,7 +102,21 @@ entity SAPProcessFlowMassUpload
         base64content: LargeString;
         base64ImgContent: LargeString;
         testscripts: String;
+        systemName: String;
         status: String;
         NavTo_TestScripts   : Composition of many SAPBusinessProcess_TestScripts
                                              on NavTo_TestScripts.ParentID = id;
+}
+
+entity systemCollection {
+        key sNo            : Integer;
+        sysID              : String; 
+        systemName      : String;  
+}
+
+entity systemVersion {
+        key sNo            : Integer;
+        sysID      : String;  
+        systemName      : String;  
+        systemVersion      : String;
 }
