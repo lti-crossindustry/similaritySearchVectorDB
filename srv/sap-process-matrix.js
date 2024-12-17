@@ -37,17 +37,20 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                 let sCurrCompositeKey = oLevel1Value + oLevel2Value + oLevel3Value + oLevel4Value;
                 sCurrCompositeKey = sCurrCompositeKey.replaceAll(" ","_").toLowerCase();
                 
-                
+                if(sCurrCompositeKey=== "enterprise_asset_managementshutdown_maintenance_processnotification_processcreate_a_shutdown_maintenance_notification_with_revision")
+                {
+                    console.log("Checking Entry");
+                }
 
                 if( !aComposeKeyList.includes(sCurrCompositeKey) )
                 {          
                 
                 let sLevel1CompKey = (oLevel1Value).replaceAll(" ","_").toLowerCase();
-                if (!aLevel1List.includes(sLevel1CompKey)) {
+                if (oLevel1Value && !aLevel1List.includes(sLevel1CompKey)) {
                     aLevel1List.push(sLevel1CompKey);
 
                     aLevel1Parents.push({
-                        id: "N1" + level1Count,
+                        id: "NA" + level1Count,
                         nodename: oLevel1Value,
                         nodelevel: 1,
                         parent: "",
@@ -60,11 +63,11 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                 }
 
                 let sLevel2CompKey = (oLevel1Value + oLevel2Value).replaceAll(" ","_").toLowerCase();
-                if (!aLevel2List.includes(sLevel2CompKey)) { 
+                if (oLevel2Value && !aLevel2List.includes(sLevel2CompKey)) { 
                     aLevel2List.push(sLevel2CompKey);
                     
                     aLevel2Parents.push({
-                        id: "N2" + level2Count,
+                        id: "NB" + level2Count,
                         nodename: oLevel2Value,
                         nodelevel: 2,
                         parent: oLevel1Value,
@@ -77,10 +80,10 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                 
                 
                 let sLevel3CompKey = (oLevel1Value + oLevel2Value + oLevel3Value).replaceAll(" ","_").toLowerCase();
-                if (!aLevel3List.includes(sLevel3CompKey)) {
+                if (oLevel3Value && !aLevel3List.includes(sLevel3CompKey)) {
                     aLevel3List.push(sLevel3CompKey);
                     aLevel3Parents.push({
-                        id: "N3" + level3Count,
+                        id: "NC" + level3Count,
                         nodename: oLevel3Value,
                         nodelevel: 3,
                         parent: oLevel2Value,
@@ -92,10 +95,10 @@ class ProcessMatrixSrv extends cds.ApplicationService {
                 }
               
 
-                if (!aLevel4List.includes(sCurrCompositeKey)) {
+                if (oLevel4Value && !aLevel4List.includes(sCurrCompositeKey)) {
                     aLevel4List.push(sCurrCompositeKey);
                     aLevel4Parents.push({
-                        id: "N4" + level4Count,
+                        id: "ND" + level4Count,
                         nodename: oLevel4Value,
                         nodelevel: 4,
                         parent: oLevel3Value,
