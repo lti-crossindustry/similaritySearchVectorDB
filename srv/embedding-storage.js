@@ -243,6 +243,7 @@ module.exports = cds.service.impl(async function () {
   const { ProcessDumpDocMedia } = this.entities;
   this.after("UPDATE",ProcessDumpDocMedia,async (req) => {
             let iMediaId = req.data.mediaId;
+            console.log("MediaID",iMediaId);
             if (!iMediaId || (iMediaId && iMediaId.length <= 0)) {
                 req.reject(404, "Media ID Required");
                 return;
