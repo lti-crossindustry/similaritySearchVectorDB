@@ -248,20 +248,8 @@ module.exports = cds.service.impl(async function () {
               console.error("Request object is undefined");
               return;
           }
-         
-
             console.log("Request Data", req.mediaId);
-           // console.log("Request Data 1", req.data.mediaId);
-            //Fetch the url from where the req is triggered
-           // const url = req._.req.path;
-            //console.log("url", url);
-           // if (url.includes("content")) {
-              const iMediaId = req.mediaId;
-           // }
-//else{
-          //    const iMediaId = 'A1';
-           // }
-           
+            const iMediaId = req.mediaId;
             console.log("MediaID",iMediaId);
             if (!iMediaId || (iMediaId && iMediaId.length <= 0)) {
                 req.reject(404, "Media ID Required");
@@ -282,6 +270,7 @@ module.exports = cds.service.impl(async function () {
         stream.on('end', async () => {                   
             // mediaObj.base64content = Buffer.concat(chunks).toString('base64');   
             let base64content = Buffer.concat(chunks).toString('base64');   
+            console.log("Base64 Data", base64content);
             await cds.tx (async ()=>{    
             await UPDATE(ProcessDumpDocMedia, iMediaId).with({ 'base64content': base64content}); // mediaObj
             // return true;
