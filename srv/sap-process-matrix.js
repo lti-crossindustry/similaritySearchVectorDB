@@ -260,6 +260,44 @@ class ProcessMatrixSrv extends cds.ApplicationService {
         }
 
 
+        this.on("callNipunGenAI", async(req) => {
+
+            // var sProcessName = req.data.sProcessName;
+            // var sTestCaseId = req.data.sTestCaseId;
+            var sPrompt = req.data.sPrompt;
+            var oUrl = 'http://3.111.119.187:9000/v1/chat/completions';
+            var myHeaders = new Headers();
+            // myHeaders.append("Authorization", "Basic " + oToken);
+            myHeaders.append("api-key", "budserve_JKLIN9kMb8jx5zBLS8G6MnJu5tAPWmiHlJSh5ccu");
+            myHeaders.append('Content-Type', "application/json");
+
+            let payload = 
+            {
+                "model": "nipun-dpo",
+                "temperature": 0.2,
+                "messages": [{
+                    "role": "user",
+                    "content": sPrompt }]
+              };
+
+            const response = await fetch(oUrl, {
+                method: 'POST',
+                headers: myHeaders,
+                body: JSON.stringify(payload),
+            })
+            if (response.status != 200) {
+                const oErrorResponse = await response.json()
+                var record = {
+                    "ports": "failed: " + oErrorResponse.error.message.value
+                }
+                return record;
+            } else {
+                const data = await response.json();
+                return data;
+            }
+        });
+
+
         return super.init();
     }
 }

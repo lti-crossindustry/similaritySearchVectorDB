@@ -14,6 +14,7 @@ service ProcessMatrixSrv {
 
     function ProcessMatrixTree() returns String;
     function ProcessDocDel() returns Boolean;
+    function callNipunGenAI( sPrompt: String ) returns String;
     // function ProcessDocMediaBase64(mediaId : String) returns String;
 
 }

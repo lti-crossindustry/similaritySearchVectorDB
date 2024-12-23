@@ -105,6 +105,7 @@ entity SAPProcessFlowMassUpload
         testscripts: String;
         systemName: String;
         status: String;
+        genaimodel: String;
         NavTo_TestScripts   : Composition of many SAPBusinessProcess_TestScripts
                                              on NavTo_TestScripts.ParentID = id;
 }
