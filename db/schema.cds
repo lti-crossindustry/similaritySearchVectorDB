@@ -1,6 +1,6 @@
 namespace com.ltim.similaritysearch;
 
-//using { managed } from '@sap/cds/common';
+using { managed, cuid } from '@sap/cds/common';
 
 entity DocumentChunk {
   key id: String;
@@ -121,4 +121,9 @@ entity systemVersion {
         sysID      : String;  
         systemName      : String;  
         systemVersion      : String;
+}
+
+entity NipunAI : cuid
+{
+        sPrompt: String;
 }
