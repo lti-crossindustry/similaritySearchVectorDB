@@ -17,8 +17,8 @@ modules:
     parameters:
       buildpack: nodejs_buildpack
       stack: cflinuxfs4
-      memory: 1024M
-      disk-quota: 2048M
+      memory: 512M
+      disk-quota: 1024M
     properties:
       OPTIMIZE_MEMORY: true
     requires:
