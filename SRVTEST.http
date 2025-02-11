@@ -81,3 +81,63 @@ Content-Type: multipart/form-data;
 
 ###
 GET http://localhost:4004/odata/v2/process-matrix-srv/ProcessDocMedia/2/content HTTP/1.1
+
+###
+POST http://localhost:4004/odata/v4/embedding-storage/FilterDocumentChunkToDisplay
+Content-Type: application/json
+ 
+###
+GET http://localhost:4004/odata/v4/embedding-storage/DocumentChunk
+ 
+ 
+###
+GET http://localhost:4004/odata/v4/embedding-storage/DisplayDocument
+ 
+ 
+###
+### Create DocumentChunk Entry
+POST http://localhost:4004/odata/v4/embedding-storage/DocumentChunk
+Content-Type: application/json
+ 
+ {
+            "id": "12",
+            "parentId": "hh",
+            "text_chunk": "kkk",
+            "metadata_column": "hll",
+            "Appname": null,
+            "Version": null,
+            "Country": null,
+            "SapSystem": null,
+            "Process": null
+        }
+
+###
+POST http://localhost:4004/odata/v4/similarity-search/getRagResponse
+Content-Type: application/json
+
+{
+    "userQuery" : "What is the solution for Supplier evaluation requests remain in status In Submission because follow-on documents (evaluation responses and evaluation scorecards) are not created."  
+}
+###
+POST http://localhost:4004/odata/v4/similarity-search/getUserQueryResponse1
+Content-Type: application/json
+
+{
+    "userQuery" : "What is the solution for Supplier evaluation requests remain in status In Submission because follow-on documents (evaluation responses and evaluation scorecards) are not created."  
+}
+###
+POST http://localhost:4004/odata/v4/similarity-search/getUserQueryResponseadminapp
+Content-Type: application/json
+
+{
+    "userQuery" : "how many entries are there in tableName"  
+}
+###
+POST http://localhost:4004/odata/v4/embedding-storage/getTextChunks
+Content-Type: application/json
+
+{
+    "metadataValue" : "6VA_S4CLD2408_BPD_EN_US.csv"  
+}
+ 
+     

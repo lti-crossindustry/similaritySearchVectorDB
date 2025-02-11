@@ -11,11 +11,15 @@ service SimilaritySearchService {
      entity systemCollection as projection on db.systemCollection;
      entity systemVersion as projection on db.systemVersion;
      entity NipunAI as projection on db.NipunAI;
-     
+    //  entity DocumentChunkApplication as projection on db.DocumentChunkApplication;
 
-    function getRagResponse()                                 returns String;
+    action getRagResponse(userQuery : String)              returns String;
     action executeSimilaritySearch(userQuery : String)      returns String;
+    action executeSimilaritySearchApplication(userQuery : String)      returns String;
     action   getCallChatGPT4o(contentAIData : iContentAIData) returns String;
+    action getUserQueryResponse(userQuery : String ) returns String;
+    action getUserQueryResponse1(userQuery : String ) returns String;
+    action getUserQueryResponseadminapp(userQuery : String ) returns String;
     // function callNipunGenAI( sPrompt: String ) returns String;
 
     type iContentAIData {

@@ -6,9 +6,37 @@ entity DocumentChunk {
   key id: String;
         parentId:String;
         text_chunk: LargeString;
-        metadata_column: LargeString;
+        metadata_column: String;
         embedding: Vector(1536);
-       
+        Appname: String;
+        Version: String;
+        Country: String;
+        SapSystem: String;
+        Process: String;
+}
+entity DocumentChunkApplication {
+  key id: String;
+        parentId:String;
+        text_chunk: LargeString;
+        metadata_column: String;
+        embedding: Vector(1536);
+        Appname: String;
+        Version: String;
+        Country: String;
+        SapSystem: String;
+        Process: String;
+}
+entity DisplayDocument {
+  key id: String;
+        parentId:String;
+        // text_chunk: LargeString;
+        metadata_column: String;
+        // embedding: Vector(1536);
+        Appname: String;
+        Version: String;
+        Country: String;
+        SapSystem: String;
+        Process: String;
 }
 
 entity ProcessDumpDocMedia

@@ -23,15 +23,15 @@
     "docx": "^9.1.0",
     "express": "^4",
     "hdb": "^0.19.10",
-    "langchain": "^0.3.5",
+    "langchain": "^0.3.15",
     "node-sass": "^9.0.0",
     "passport": "^0.7.0",
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^1.1.1",
     "pdfkit": "^0.14.0",
+    "pdftoimg-js": "0.0.2",
     "stream": "^0.0.3",
-    "uuid": "^9.0.1",
-    "pdftoimg-js":"0.0.2"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^1",
@@ -50,6 +50,7 @@
   },
   "cds": {
     "requires": {
+
       "cap-llm-plugin": true,
       "auth": "mocked",
       "db": {
@@ -57,6 +58,30 @@
         "pool": {
           "max": 14000,
           "min": 100
+        }
+
+      },
+      "gen-ai-hub": {
+        "gpt-4": {
+          "destinationName": "GenAIHubDestination",
+          "deploymentUrl": "/v2/inference/deployments/db4893245053db9f",
+          "resourceGroup": "default",
+          "apiVersion": "2024-02-15-preview",
+          "modelName": "gpt-4"
+        },
+        "text-embedding-ada-002": {
+          "destinationName": "GenAIHubDestination",
+          "deploymentUrl": "/v2/inference/deployments/df49ff57aff9dc52",
+          "resourceGroup": "default",
+          "apiVersion": "2024-02-15-preview",
+          "modelName": "text-embedding-ada-002"
+        }
+      },
+      "GenAIHubDestination": {
+        "kind": "rest",
+        "credentials": {
+          "destination": "GENAI_CORE_HUB",
+          "requestTimeout": "300000"
         }
       },
       "GENERATIVE_AI_HUB": {
@@ -70,7 +95,13 @@
         "credentials": {
           "destination": "GENAI_CORE_HUB",
           "requestTimeout": "3000000"
-        }
+        },
+        "GENAI_CORE_HUB": {
+          "kind": "rest",
+          "credentials": {
+            "destination": "GENAI_CORE_HUB",
+            "requestTimeout": "3000000"
+          }
       },
       "[hybrid]": {
         "db": {
@@ -97,4 +128,5 @@
       }
     }
   }
+}
 }
